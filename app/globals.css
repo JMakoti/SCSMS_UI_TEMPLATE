@@ -3603,14 +3603,38 @@ tbody tr:hover {
   .trends-line-panel [class~="h-[300px]"] { height: 220px; padding: 14px 0 8px; }
 }
 @media (max-width: 380px) {
+  .profile-tabs {
+    gap: 12px;
+    margin-inline: -10px;
+    padding-inline: 10px;
+  }
+
+  .profile-tabs button {
+    min-height: 36px;
+    padding-inline: 2px;
+    font-size: 10px;
+  }
+
   .performance-metric-grid { gap: 7px; }
   .performance-metric-card { min-height: 72px; padding: 10px; }
   .performance-metric-card strong { font-size: 17px; }
   .performance-metric-card b { top: 9px; right: 9px; padding: 5px 6px; }
   .performance-overview { gap: 12px; }
   .performance-overview-heading h2 { font-size: 17px; }
+  .performance-section-title { padding: 11px 10px; }
   .performance-section-title h3 { font-size: 11px; }
+  .performance-section-title p { max-width: 25ch; }
+  .trend-axis-note { font-size: 8px; }
   .trends-line-panel [class~="h-[300px]"] { height: 190px; }
+}
+
+@media (max-width: 320px) {
+  .performance-overview-heading h2 { font-size: 16px; }
+  .performance-overview-heading p { font-size: 10px; }
+  .performance-metric-card > span { font-size: 8px; }
+  .performance-metric-card strong { font-size: 16px; }
+  .performance-metric-card small { font-size: 8px; }
+  .trends-line-panel [class~="h-[300px]"] { height: 175px; }
 }
 .report-workspace {
   display: grid;
