@@ -10,4 +10,8 @@ export const infrastructureProjectSchema = z.object({
   budget: z.string().trim().optional(),
   targetYear: z.number().min(2026, "Target year must be 2026 or later"),
   description: z.string().trim().optional(),
+  contractor: requiredText("Contractor"),
+  infrastructureCondition: requiredText("Infrastructure Condition"),
+  dateStarted: requiredText("Date Started"),
+  dateCompleted: requiredText("Date Completed"),
 });

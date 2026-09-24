@@ -1,9 +1,5 @@
-import InfrastructureContent from "@/features/pages/infrastructure-page";
+import ModuleRoutePage from "@/features/pages/module-route-page";
 
 export default function InfrastructurePage() {
-  return (
-    <main className="content">
-      <InfrastructureContent />
-    </main>
-  );
+  return <ModuleRoutePage active="Infrastructure" />;
 }

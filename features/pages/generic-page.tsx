@@ -70,12 +70,14 @@ export function GenericPage({
   const Icon = c.icon;
   const wardSummaries =
     active === "Ward" ? getRabaiWardSummaries(currentAcademicYear.id) : [];
+    
   const schoolRegistryItems =
-    active === "Infrastructure" || active === "School Contacts"
+    active === "Infrastructure" || active === "School Contacts" || active === "School Performance"
       ? [...rabaiSchools]
-          .sort((a, b) => a.displayName.localeCompare(b.displayName))
-          .map((school) => school.displayName)
+        .sort((a, b) => a.displayName.localeCompare(b.displayName))
+        .map((school) => school.displayName)
       : [];
+
   const moduleItems =
     active === "Ward"
       ? wardSummaries.map((ward) => ward.name)
@@ -220,6 +222,7 @@ function AddStaffDialog({ onClose }: { onClose: () => void }) {
       designation: "Teacher",
       assignedSchool: "",
       employmentType: "Permanent",
+      employer: "Goverment_Tsc",
     },
   });
   return (
@@ -300,6 +303,26 @@ function AddStaffDialog({ onClose }: { onClose: () => void }) {
                   </select>
                 </label>
                 <label>
+                  Employer
+                  <select {...register("employer")}>
+                    <option value="Goverment_Tsc">Government (TSC)</option>
+                    <option value="County_Goverment">County Government</option>
+                    <option value="School_Board_Bom">School Board (BOM)</option>
+                    <option value="PRIVATE_OWNER">Private Owner</option>
+                    <option value="FAITH_BASED">Faith Based Organization</option>
+                    <option value="NGO">NGO</option>
+                    <option value="AGENCY">Agency</option>
+                  </select>
+                </label>
+                <label>
+                  Tsc No.
+                  <input
+                    {...register("tscNo")}
+                    autoFocus
+                    placeholder="Enter Tsc No."
+                  />
+                </label>
+                <label>
                   Email address
                   <input
                     {...register("email")}
@@ -313,6 +336,13 @@ function AddStaffDialog({ onClose }: { onClose: () => void }) {
                     {...register("phone")}
                     type="tel"
                     placeholder="+254 700 000 000"
+                  />
+                </label>
+                <label>
+                  Date joined
+                  <input
+                    {...register("dateJoined")}
+                    type="date"
                   />
                 </label>
               </div>

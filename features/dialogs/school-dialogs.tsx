@@ -135,8 +135,8 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
   const { register, handleSubmit } = useForm<AddSchoolFormValues>({
     resolver: zodResolver(addSchoolSchema),
     defaultValues: {
-      institutionType: "PRIMARY",
-      ownershipType: "PUBLIC",
+      institutionType: "Regular",
+      ownershipType: "Goverment",
       genderType: "MIXED",
       boardingType: "DAY",
       county: "Kilifi",
@@ -144,7 +144,6 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
       ward: "Mwawesa",
       sne: "NO",
       isActive: "Active",
-      dataConfidence: "VERIFIED",
     },
   });
   return (
@@ -180,11 +179,23 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
               <div className="form-grid">
                 <label>
                   School code
-                  <input {...register("schoolCode")} placeholder="Optional" />
+                  <input {...register("schoolCode")} placeholder="School Code" />
                 </label>
                 <label>
                   UIC code
-                  <input {...register("uicCode")} placeholder="Optional" />
+                  <input {...register("uicCode")} placeholder="NEMIS/UIC Code" />
+                </label>
+                <label>
+                  KNEC code
+                  <input {...register("knecCode")} placeholder="KNEC Code" />
+                </label>
+                <label>
+                  TSC code
+                  <input {...register("tscCode")} placeholder="TSC Code" />
+                </label>
+                <label>
+                  Registration Number
+                  <input {...register("regNumber")} placeholder="Registration Number" />
                 </label>
                 <label>
                   Official school name
@@ -204,28 +215,30 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                 <label>
                   Institution type
                   <select {...register("institutionType")}>
-                    <option value="PRIMARY">Primary</option>
-                    <option value="JUNIOR_SECONDARY">Junior secondary</option>
-                    <option value="SENIOR_SECONDARY">Senior secondary</option>
-                    <option value="INTEGRATED">Integrated</option>
-                    <option value="OTHER">Other</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Intergrated">Intergrated</option>
+                    <option value="Special_Needs">Special Needs</option>
+                    <option value="Comprehensive">Comprehensive</option>
                   </select>
                 </label>
                 <label>
-                  Source institution type
-                  <input
-                    {...register("sourceInstitutionType")}
-                    placeholder="Optional source type"
-                  />
+                  Registration Status
+                  <select
+                    {...register("registrationStatus")}
+                  >
+                    <option value="REGISTERED">Public</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="SUSPENDED">Suspended</option>
+                    <option value="CLOSED">Closed</option>
+                  </select>
                 </label>
                 <label>
                   Ownership
                   <select {...register("ownershipType")}>
-                    <option value="PUBLIC">Public</option>
-                    <option value="PRIVATE">Private</option>
-                    <option value="FAITH_BASED">Faith based</option>
-                    <option value="OTHER">Other</option>
-                    <option value="UNKNOWN">Unknown</option>
+                    <option value="Goverment">Goverment</option>
+                    <option value="Private">Private</option>
+                    <option value="Community">Community</option>
+                    <option value="NGO/Organization">NGO/Organization</option>
                   </select>
                 </label>
                 <label>
@@ -234,7 +247,6 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                     <option value="MIXED">Mixed</option>
                     <option value="BOYS">Boys</option>
                     <option value="GIRLS">Girls</option>
-                    <option value="UNKNOWN">Unknown</option>
                   </select>
                 </label>
                 <label>
@@ -243,7 +255,6 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                     <option value="DAY">Day</option>
                     <option value="BOARDING">Boarding</option>
                     <option value="DAY_AND_BOARDING">Day and boarding</option>
-                    <option value="UNKNOWN">Unknown</option>
                   </select>
                 </label>
               </div>
@@ -315,7 +326,7 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                   <select {...register("sne")}>
                     <option value="NO">No</option>
                     <option value="YES">Yes</option>
-                    <option value="UNKNOWN">Unknown</option>
+                   
                   </select>
                 </label>
                 <label>
@@ -323,14 +334,6 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                   <select {...register("isActive")}>
                     <option>Active</option>
                     <option>Inactive</option>
-                  </select>
-                </label>
-                <label>
-                  Data confidence
-                  <select {...register("dataConfidence")}>
-                    <option value="VERIFIED">Verified</option>
-                    <option value="PARTIAL">Partial</option>
-                    <option value="SECONDARY_SOURCE">Secondary source</option>
                   </select>
                 </label>
               </div>
@@ -356,6 +359,3 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
     </div>
   );
 }
-
-/* v0 Design System Showcase Page */
-/* End-to-end UI prototype: mocked local data, interactive navigation, search, filters, dialogs, tabs and offline-safe status. */

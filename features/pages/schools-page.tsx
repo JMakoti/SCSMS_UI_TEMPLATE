@@ -50,10 +50,9 @@ function SchoolsPage({
   const [page, setPage] = useState(1);
   const schoolLevels = [
     "All",
-    "PRIMARY",
-    "JUNIOR_SECONDARY",
-    "SENIOR_SECONDARY",
-    "INTEGRATED",
+    "Primary",
+    "Junior_Secondary",
+    "Senior_School",
   ];
   const filtered = useMemo(
     () =>

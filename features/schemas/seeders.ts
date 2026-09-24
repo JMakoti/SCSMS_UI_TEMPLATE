@@ -34,7 +34,7 @@ export const staffRecordSchema = z.object({
   role: z.string(),
   type: z.enum(["Teaching", "Non-teaching"]),
   phone: z.string(),
-  status: z.enum(["Active", "On leave"]),
+  status: z.enum(["Active", "On leave","In Active"]),
 });
 
 export const contactMethodSchema = z.object({

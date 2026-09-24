@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SCSMS — School Performance</title>
+
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #eff6ff;
+    --primary-soft: #dbeafe;
+
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --warning: #d97706;
+    --warning-light: #fffbeb;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+
+    --background: #f6f8fb;
+    --surface: #ffffff;
+    --surface-alt: #f8fafc;
+    --border: #e5e9f0;
+    --border-strong: #cbd5e1;
+
+    --text: #0f172a;
+    --text-soft: #334155;
+    --muted: #64748b;
+
+    --radius-sm: 8px;
+    --radius: 12px;
+    --radius-lg: 16px;
+
+    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+    --shadow: 0 1px 3px rgba(15, 23, 42, 0.07), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --shadow-md: 0 6px 18px -6px rgba(15, 23, 42, 0.12);
+
+    --font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+      BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    --ring: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: #0b1220;
+      --surface: #121a2b;
+      --surface-alt: #0f1727;
+      --border: #1e293b;
+      --border-strong: #334155;
+      --text: #f1f5f9;
+      --text-soft: #cbd5e1;
+      --muted: #94a3b8;
+      --primary-light: #172554;
+      --primary-soft: #1e3a8a;
+      --success-light: #052e16;
+      --warning-light: #431407;
+      --danger-light: #450a0a;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-family);
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button, select, input { font: inherit; color: inherit; }
+
+  :focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  .page {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+  }
+
+  /* ---------- HEADER ---------- */
+  .page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 2px;
+    background: var(--primary);
+    border-radius: 999px;
+  }
+
+  h1 {
+    font-size: clamp(32px, 4vw, 44px);
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .page-description {
+    max-width: 640px;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .header-actions { display: flex; gap: 12px; align-items: flex-end; }
+
+  .select-wrapper { display: flex; flex-direction: column; gap: 6px; }
+  .select-label {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  select {
+    height: 42px;
+    padding: 0 36px 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 12px center;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    min-width: 160px;
+  }
+
+  select:hover { border-color: var(--border-strong); }
+  select:focus { border-color: var(--primary); box-shadow: var(--ring); }
+
+  /* ---------- SCHOOL BANNER ---------- */
+  .school-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .school-banner::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), #7c3aed 60%, #ec4899);
+  }
+
+  .school-info { display: flex; align-items: center; gap: 14px; }
+
+  .school-logo {
+    width: 48px; height: 48px;
+    display: grid; place-items: center;
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--primary-soft);
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .school-name { font-size: 17px; font-weight: 600; }
+
+  .school-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .school-meta span { position: relative; }
+  .school-meta span:not(:last-child)::after {
+    content: "";
+    display: inline-block;
+    width: 4px; height: 4px;
+    background: var(--border-strong);
+    border-radius: 50%;
+    margin-left: 14px;
+    vertical-align: middle;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--success-light);
+    color: var(--success);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .status-dot {
+    width: 7px; height: 7px;
+    background: currentColor;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 20%, transparent);
+  }
+
+  /* ---------- TABS ---------- */
+  .tabs-container {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    box-shadow: var(--shadow-sm);
+    scrollbar-width: thin;
+  }
+
+  .tabs { display: flex; min-width: max-content; padding: 4px; gap: 2px; }
+
+  .tab {
+    position: relative;
+    padding: 12px 18px;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 9px;
+    transition: color 0.15s, background 0.15s;
+    white-space: nowrap;
+  }
+
+  .tab:hover { color: var(--primary); background: var(--primary-light); }
+
+  .tab[aria-selected="true"] { color: var(--primary); background: var(--primary-light); }
+
+  .tab[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    left: 14px; right: 14px; bottom: 2px;
+    height: 2px;
+    background: var(--primary);
+    border-radius: 999px;
+  }
+
+  /* ---------- PANELS ---------- */
+  .panel { display: none; animation: fade 0.25s ease; }
+  .panel.active { display: block; }
+
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  h2 {
+    font-size: clamp(22px, 2.4vw, 28px);
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .section-description { margin-top: 4px; color: var(--muted); font-size: 14px; }
+
+  /* ---------- KPI CARDS ---------- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+
+  .stat-card {
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-soft);
+  }
+
+  .stat-top { display: flex; align-items: center; justify-content: space-between; }
+
+  .stat-label {
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .stat-icon {
+    width: 32px; height: 32px;
+    display: grid; place-items: center;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .stat-value {
+    margin-top: 14px;
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-footer {
+    display: flex; align-items: center; gap: 7px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .trend-up { color: var(--success); font-weight: 600; }
+  .trend-down { color: var(--danger); font-weight: 600; }
+
+  /* ---------- CONTENT GRID ---------- */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .card + .card { margin-top: 0; }
+
+  .stack > * + * { margin-top: 20px; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-title { font-size: 15px; font-weight: 600; }
+  .card-subtitle { margin-top: 2px; color: var(--muted); font-size: 12.5px; }
+  .card-body { padding: 20px; }
+
+  /* ---------- PROGRESS BARS ---------- */
+  .performance-row + .performance-row { margin-top: 18px; }
+
+  .performance-label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  .performance-value {
+    color: var(--muted);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress {
+    height: 8px;
+    background: var(--surface-alt);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--primary), #60a5fa);
+    border-radius: inherit;
+    transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .progress-bar.warn { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+  .progress-bar.bad  { background: linear-gradient(90deg, var(--danger), #f87171); }
+
+  /* ---------- LEVELS ---------- */
+  .level-list { display: grid; gap: 10px; }
+
+  .level {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .level:hover { background: var(--surface-alt); border-color: var(--border-strong); }
+
+  .level-left { display: flex; align-items: center; gap: 10px; }
+  .level-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .level-name { font-size: 13.5px; font-weight: 500; }
+  .level-count { color: var(--muted); font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .exceeding   { background: var(--success); }
+  .meeting     { background: var(--primary); }
+  .approaching { background: var(--warning); }
+  .below       { background: var(--danger); }
+
+  /* distribution bar */
+  .distribution {
+    display: flex;
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    background: var(--surface-alt);
+  }
+
+  .distribution span { height: 100%; transition: flex 0.5s ease; }
+  .distribution .d-exceeding   { background: var(--success); }
+  .distribution .d-meeting     { background: var(--primary); }
+  .distribution .d-approaching { background: var(--warning); }
+  .distribution .d-below       { background: var(--danger); }
+
+  /* ---------- TABLE ---------- */
+  .table-wrapper { overflow-x: auto; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  caption {
+    text-align: left;
+    padding: 0 0 10px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 13px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  th {
+    color: var(--muted);
+    background: var(--surface-alt);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  tbody tr:hover { background: var(--surface-alt); }
+  tbody tr:last-child td { border-bottom: 0; }
+
+  .score { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .score.good    { color: var(--success); }
+  .score.average { color: var(--warning); }
+  .score.low     { color: var(--danger); }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+    background: var(--success-light);
+    color: var(--success);
+  }
+  .pill::before {
+    content: ""; width: 6px; height: 6px;
+    background: currentColor; border-radius: 50%;
+  }
+  .pill.pending { background: var(--warning-light); color: var(--warning); }
+  .pill.draft   { background: var(--surface-alt); color: var(--muted); }
+
+  /* ---------- TREND CHART ---------- */
+  .trend-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    height: 220px;
+    padding: 20px 6px 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+
+  .year-column {
+    flex: 1;
+    min-width: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .bar-wrapper {
+    width: 100%;
+    height: 170px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .year-bar {
+    width: min(48px, 70%);
+    background: linear-gradient(180deg, #60a5fa, var(--primary));
+    border-radius: 7px 7px 0 0;
+    height: 0;
+    transition: height 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .year-column:hover .year-bar { filter: brightness(1.08); }
+
+  .year-score { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .year-label { color: var(--muted); font-size: 12px; }
+
+  /* ---------- BUTTONS ---------- */
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .button {
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s, border-color 0.15s, transform 0.05s;
+  }
+
+  .button:hover { background: var(--surface-alt); border-color: var(--border-strong); }
+  .button:active { transform: translateY(1px); }
+
+  .button.primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(37, 99, 235, 0.3);
+  }
+
+  .button.primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+
+  .button.ghost { border-color: transparent; background: transparent; }
+  .button.ghost:hover { background: var(--surface-alt); border-color: var(--border); }
+
+  /* ---------- EMPTY STATE ---------- */
+  .empty {
+    padding: 48px 20px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .empty strong { display: block; color: var(--text); font-size: 15px; margin-bottom: 4px; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1080px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .content-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 720px) {
+    .page { padding: 20px 14px 48px; }
+    .page-header { align-items: flex-start; flex-direction: column; }
+    .header-actions { width: 100%; }
+    .select-wrapper, select { width: 100%; }
+    .school-banner { align-items: flex-start; flex-direction: column; }
+    .stats-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 22px; }
+    .card-header { align-items: flex-start; flex-direction: column; }
+    .actions { justify-content: stretch; }
+    .actions .button { flex: 1; justify-content: center; }
+  }
+
+  /* ---------- PRINT ---------- */
+  @media print {
+    body { background: #fff; }
+    .tabs-container, .actions, .header-actions, .button { display: none !important; }
+    .panel { display: block !important; page-break-inside: avoid; }
+    .card, .stat-card, .school-banner { box-shadow: none; border-color: #ddd; }
+  }
+</style>
+</head>
+
+<body>
+<main class="page">
+
+  <!-- PAGE HEADER -->
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">School Management / Performance</div>
+      <h1>School Performance</h1>
+      <p class="page-description">
+        Track assessment outcomes, learning-area performance, learner progress,
+        and historical trends.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <div class="select-wrapper">
+        <label class="select-label" for="year">Academic year</label>
+        <select id="year" aria-label="Select academic year">
+          <option value="2026" selected>2026</option>
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- SCHOOL BANNER -->
+  <section class="school-banner" aria-label="School information">
+    <div class="school-info">
+      <div class="school-logo" aria-hidden="true">RS</div>
+      <div>
+        <div class="school-name">Rabai Integrated School</div>
+        <div class="school-meta">
+          <span>Government</span>
+          <span>Primary &amp; Junior Secondary</span>
+          <span>Day &amp; Boarding</span>
+          <span>KNEC 04122123</span>
+        </div>
+      </div>
+    </div>
+    <div class="status" role="status">
+      <span class="status-dot" aria-hidden="true"></span>
+      Active
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <nav class="tabs-container" aria-label="Performance sections">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true"  aria-controls="panel-overview" id="tab-overview">Overview</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-kpsea"    id="tab-kpsea">KPSEA</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-kjsea"    id="tab-kjsea">KJSEA</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-kcse"     id="tab-kcse">KCSE</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-sba"      id="tab-sba">SBA</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-areas"    id="tab-areas">Learning Areas</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="panel-trends"   id="tab-trends">Trends</button>
+    </div>
+  </nav>
+
+  <!-- ================= OVERVIEW ================= -->
+  <section class="panel active" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview">
+    <div class="section-header">
+      <div>
+        <h2>Performance Overview</h2>
+        <p class="section-description" data-summary>Summary of the school's assessment performance for 2026.</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Candidates</span>
+          <div class="stat-icon" aria-hidden="true">01</div>
+        </div>
+        <div class="stat-value" data-kpi="candidates">184</div>
+        <div class="stat-footer">
+          <span class="trend-up">+12%</span><span>from previous year</span>
+        </div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Learning Areas</span>
+          <div class="stat-icon" aria-hidden="true">LA</div>
+        </div>
+        <div class="stat-value" data-kpi="areas">12</div>
+        <div class="stat-footer"><span>Across Grade 1–9</span></div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Projects</span>
+          <div class="stat-icon" aria-hidden="true">PR</div>
+        </div>
+        <div class="stat-value" data-kpi="projects">4</div>
+        <div class="stat-footer"><span>Assessment projects</span></div>
+      </article>
+
+      <article class="stat-card">
+        <div class="stat-top">
+          <span class="stat-label">Performance</span>
+          <div class="stat-icon" aria-hidden="true">↑</div>
+        </div>
+        <div class="stat-value" data-kpi="performance">72%</div>
+        <div class="stat-footer">
+          <span class="trend-up">+6.4%</span><span>year-over-year</span>
+        </div>
+      </article>
+    </div>
+
+    <div class="content-grid">
+      <!-- Learning areas -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Learning Area Performance</div>
+            <div class="card-subtitle" data-areas-subtitle>2026 assessment performance</div>
+          </div>
+          <button class="button ghost" type="button" data-goto="areas">View details</button>
+        </div>
+        <div class="card-body" data-areas-list>
+          <!-- injected -->
+        </div>
+      </article>
+
+      <!-- Levels -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Performance Levels</div>
+            <div class="card-subtitle">Learner distribution</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="distribution" data-distribution aria-hidden="true"></div>
+          <div class="level-list" data-levels-list>
+            <!-- injected -->
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Performance Trend</div>
+          <div class="card-subtitle">Historical school performance</div>
+        </div>
+        <select aria-label="Filter trend by assessment" data-trend-filter>
+          <option value="all">All assessments</option>
+          <option value="kpsea">KPSEA</option>
+          <option value="kjsea">KJSEA</option>
+          <option value="kcse">KCSE</option>
+        </select>
+      </div>
+      <div class="card-body">
+        <div class="trend-chart" data-trend-chart>
+          <!-- injected -->
+        </div>
+      </div>
+    </article>
+
+    <article class="card" style="margin-top: 20px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Recent Assessment Results</div>
+          <div class="card-subtitle">Latest recorded assessment performance</div>
+        </div>
+        <button class="button primary" type="button">Add Result</button>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <caption class="sr-only" style="position:absolute;left:-9999px;">Recent assessment results</caption>
+          <thead>
+            <tr>
+              <th scope="col">Assessment</th>
+              <th scope="col">Grade</th>
+              <th scope="col">Year</th>
+              <th scope="col">Candidates</th>
+              <th scope="col">Performance</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody data-results-body>
+            <!-- injected -->
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <div class="actions">
+      <button class="button" type="button">Export Report</button>
+      <button class="button primary" type="button">Add Performance Record</button>
+    </div>
+  </section>
+
+  <!-- ================= KPSEA ================= -->
+  <section class="panel" id="panel-kpsea" role="tabpanel" aria-labelledby="tab-kpsea">
+    <div class="section-header">
+      <div>
+        <h2>KPSEA</h2>
+        <p class="section-description">
+          Kenya Primary School Education Assessment — Grade 6.
+        </p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Candidates</span><div class="stat-icon">01</div></div>
+        <div class="stat-value" data-kpsea-kpi="candidates">86</div>
+        <div class="stat-footer"><span>Grade 6 · <span data-kpsea-kpi="year">2026</span></span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Overall Mean</span><div class="stat-icon">M</div></div>
+        <div class="stat-value" data-kpsea-kpi="mean">72%</div>
+        <div class="stat-footer"><span class="trend-up">+4.2%</span><span>vs previous year</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Best Subject</span><div class="stat-icon">★</div></div>
+        <div class="stat-value" data-kpsea-kpi="best">78%</div>
+        <div class="stat-footer"><span data-kpsea-kpi="best-name">Creative Arts</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Below Expectation</span><div class="stat-icon">↓</div></div>
+        <div class="stat-value" data-kpsea-kpi="below">6%</div>
+        <div class="stat-footer"><span data-kpsea-kpi="below-count">5 learners</span></div>
+      </article>
+    </div>
+
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Subject Performance</div>
+          <div class="card-subtitle">
+            Candidates who sat each subject and their mean score —
+            <span data-kpsea-kpi="year">2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Subject</th>
+              <th scope="col">Candidates</th>
+              <th scope="col">Mean</th>
+              <th scope="col">Exceeding</th>
+              <th scope="col">Meeting</th>
+              <th scope="col">Below</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody data-kpsea-subjects>
+            <!-- injected -->
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="card" style="margin-top: 20px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">KPSEA Trend</div>
+          <div class="card-subtitle">Mean score by year</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="trend-chart" data-kpsea-trend>
+          <!-- injected -->
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= KJSEA ================= -->
+  <section class="panel" id="panel-kjsea" role="tabpanel" aria-labelledby="tab-kjsea">
+    <div class="section-header">
+      <div>
+        <h2>KJSEA</h2>
+        <p class="section-description">
+          Kenya Junior School Education Assessment — Grade 9.
+        </p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Candidates</span><div class="stat-icon">01</div></div>
+        <div class="stat-value" data-kjsea-kpi="candidates">62</div>
+        <div class="stat-footer"><span>Grade 9 · <span data-kjsea-kpi="year">2026</span></span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Overall Mean</span><div class="stat-icon">M</div></div>
+        <div class="stat-value" data-kjsea-kpi="mean">69%</div>
+        <div class="stat-footer"><span class="trend-up">+2.8%</span><span>vs previous year</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Best Subject</span><div class="stat-icon">★</div></div>
+        <div class="stat-value" data-kjsea-kpi="best">75%</div>
+        <div class="stat-footer"><span data-kjsea-kpi="best-name">Kiswahili</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Below Expectation</span><div class="stat-icon">↓</div></div>
+        <div class="stat-value" data-kjsea-kpi="below">8%</div>
+        <div class="stat-footer"><span data-kjsea-kpi="below-count">5 learners</span></div>
+      </article>
+    </div>
+
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Subject Performance</div>
+          <div class="card-subtitle">
+            Candidates who sat each subject and their mean score —
+            <span data-kjsea-kpi="year">2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Subject</th>
+              <th scope="col">Candidates</th>
+              <th scope="col">Mean</th>
+              <th scope="col">Exceeding</th>
+              <th scope="col">Meeting</th>
+              <th scope="col">Below</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody data-kjsea-subjects>
+            <!-- injected -->
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="card" style="margin-top: 20px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">KJSEA Trend</div>
+          <div class="card-subtitle">Mean score by year</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="trend-chart" data-kjsea-trend>
+          <!-- injected -->
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= KCSE ================= -->
+  <section class="panel" id="panel-kcse" role="tabpanel" aria-labelledby="tab-kcse">
+    <div class="section-header">
+      <div>
+        <h2>KCSE</h2>
+        <p class="section-description">
+          Kenya Certificate of Secondary Education — Form 4.
+        </p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Candidates</span><div class="stat-icon">01</div></div>
+        <div class="stat-value" data-kcse-kpi="candidates">54</div>
+        <div class="stat-footer"><span>Form 4 · <span data-kcse-kpi="year">2026</span></span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Mean Grade</span><div class="stat-icon">M</div></div>
+        <div class="stat-value" data-kcse-kpi="mean">7.42</div>
+        <div class="stat-footer"><span class="trend-up">+0.31</span><span>vs previous year</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">Best Subject</span><div class="stat-icon">★</div></div>
+        <div class="stat-value" data-kcse-kpi="best">8.60</div>
+        <div class="stat-footer"><span data-kcse-kpi="best-name">Mathematics</span></div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-label">University Qualifier</span><div class="stat-icon">↑</div></div>
+        <div class="stat-value" data-kcse-kpi="uni">18%</div>
+        <div class="stat-footer"><span data-kcse-kpi="uni-count">10 candidates</span></div>
+      </article>
+    </div>
+
+    <article class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Subject Performance</div>
+          <div class="card-subtitle">
+            Candidates who sat each subject and their mean grade —
+            <span data-kcse-kpi="year">2026</span>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Subject</th>
+              <th scope="col">Candidates</th>
+              <th scope="col">Mean Grade</th>
+              <th scope="col">A–B</th>
+              <th scope="col">C</th>
+              <th scope="col">D–E</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody data-kcse-subjects>
+            <!-- injected -->
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="card" style="margin-top: 20px;">
+      <div class="card-header">
+        <div>
+          <div class="card-title">KCSE Trend</div>
+          <div class="card-subtitle">Mean grade by year</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="trend-chart" data-kcse-trend>
+          <!-- injected -->
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= SBA ================= -->
+  <section class="panel" id="panel-sba" role="tabpanel" aria-labelledby="tab-sba">
+    <div class="section-header">
+      <div>
+        <h2>School-Based Assessment</h2>
+        <p class="section-description">Formative assessment across Grade 7–9.</p>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Projects</span><div class="stat-icon">PR</div></div><div class="stat-value">4</div><div class="stat-footer"><span>Active this term</span></div></article>
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Submissions</span><div class="stat-icon">SB</div></div><div class="stat-value">74</div><div class="stat-footer"><span>of 74 learners</span></div></article>
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Mean</span><div class="stat-icon">M</div></div><div class="stat-value">64%</div><div class="stat-footer"><span class="trend-up">+1.6%</span><span>term-over-term</span></div></article>
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Completed</span><div class="stat-icon">OK</div></div><div class="stat-value">3</div><div class="stat-footer"><span>1 in progress</span></div></article>
+    </div>
+  </section>
+
+  <!-- ================= LEARNING AREAS ================= -->
+  <section class="panel" id="panel-areas" role="tabpanel" aria-labelledby="tab-areas">
+    <div class="section-header">
+      <div>
+        <h2>Learning Areas</h2>
+        <p class="section-description">Detailed breakdown across all learning areas.</p>
+      </div>
+    </div>
+    <article class="card">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Learning Area</th>
+              <th scope="col">Grade</th>
+              <th scope="col">Mean</th>
+              <th scope="col">Exceeding</th>
+              <th scope="col">Meeting</th>
+              <th scope="col">Approaching</th>
+              <th scope="col">Below</th>
+            </tr>
+          </thead>
+          <tbody data-learning-areas-body>
+            <!-- injected -->
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= TRENDS ================= -->
+  <section class="panel" id="panel-trends" role="tabpanel" aria-labelledby="tab-trends">
+    <div class="section-header">
+      <div>
+        <h2>Performance Trends</h2>
+        <p class="section-description">Multi-year performance by assessment type.</p>
+      </div>
+    </div>
+    <article class="card">
+      <div class="card-header"><div><div class="card-title">Mean score by year</div><div class="card-subtitle">2023 – 2026</div></div></div>
+      <div class="card-body">
+        <div class="trend-chart" data-trend-chart>
+          <!-- injected -->
+        </div>
+      </div>
+    </article>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  /* =========================================================
+     YEAR DATA (Overview + Learning Areas + results)
+  ========================================================= */
+  const DATA = {
+    2026: {
+      summary: "Summary of the school's assessment performance for 2026.",
+      kpi: { candidates: 184, areas: 12, projects: 4, performance: "72%" },
+      areas: [
+        { name: "Mathematics",          value: 72, level: "good" },
+        { name: "English",              value: 68, level: "good" },
+        { name: "Kiswahili",            value: 71, level: "good" },
+        { name: "Science & Technology", value: 65, level: "average" },
+        { name: "Social Studies",       value: 74, level: "good" },
+      ],
+      levels: [
+        { label: "Exceeding Expectation",   count: 32, cls: "exceeding",   key: "d-exceeding"   },
+        { label: "Meeting Expectation",     count: 41, cls: "meeting",     key: "d-meeting"     },
+        { label: "Approaching Expectation", count: 18, cls: "approaching", key: "d-approaching" },
+        { label: "Below Expectation",       count: 7,  cls: "below",       key: "d-below"       },
+      ],
+      trend: [
+        { year: 2023, score: 61 },
+        { year: 2024, score: 65 },
+        { year: 2025, score: 68 },
+        { year: 2026, score: 72 },
+      ],
+      results: [
+        { assessment: "KPSEA", grade: "Grade 6", year: 2026, candidates: 86, score: 72, status: "Completed" },
+        { assessment: "KJSEA", grade: "Grade 9", year: 2026, candidates: 62, score: 69, status: "Completed" },
+        { assessment: "SBA",   grade: "Grade 8", year: 2026, candidates: 74, score: 64, status: "Completed" },
+      ],
+      learningAreas: [
+        { name: "Mathematics",          grade: "1–9", mean: 72, exceeding: 28, meeting: 42, approaching: 22, below: 8 },
+        { name: "English",              grade: "1–9", mean: 68, exceeding: 22, meeting: 46, approaching: 24, below: 8 },
+        { name: "Kiswahili",            grade: "1–9", mean: 71, exceeding: 26, meeting: 44, approaching: 22, below: 8 },
+        { name: "Science & Technology", grade: "1–9", mean: 65, exceeding: 18, meeting: 44, approaching: 28, below: 10 },
+        { name: "Social Studies",       grade: "1–9", mean: 74, exceeding: 30, meeting: 42, approaching: 20, below: 8 },
+        { name: "Creative Arts",        grade: "1–9", mean: 78, exceeding: 36, meeting: 40, approaching: 18, below: 6 },
+        { name: "Agriculture",          grade: "4–9", mean: 70, exceeding: 24, meeting: 46, approaching: 22, below: 8 },
+        { name: "Pre-Technical",        grade: "7–9", mean: 67, exceeding: 20, meeting: 46, approaching: 26, below: 8 },
+      ],
+    },
+    2025: {
+      summary: "Summary of the school's assessment performance for 2025.",
+      kpi: { candidates: 172, areas: 12, projects: 4, performance: "68%" },
+      areas: [
+        { name: "Mathematics",          value: 68, level: "good" },
+        { name: "English",              value: 64, level: "average" },
+        { name: "Kiswahili",            value: 67, level: "good" },
+        { name: "Science & Technology", value: 62, level: "average" },
+        { name: "Social Studies",       value: 70, level: "good" },
+      ],
+      levels: [
+        { label: "Exceeding Expectation",   count: 24, cls: "exceeding",   key: "d-exceeding"   },
+        { label: "Meeting Expectation",     count: 38, cls: "meeting",     key: "d-meeting"     },
+        { label: "Approaching Expectation", count: 24, cls: "approaching", key: "d-approaching" },
+        { label: "Below Expectation",       count: 12, cls: "below",       key: "d-below"       },
+      ],
+      trend: [
+        { year: 2023, score: 61 },
+        { year: 2024, score: 65 },
+        { year: 2025, score: 68 },
+      ],
+      results: [
+        { assessment: "KPSEA", grade: "Grade 6", year: 2025, candidates: 80, score: 68, status: "Completed" },
+        { assessment: "KJSEA", grade: "Grade 9", year: 2025, candidates: 58, score: 66, status: "Completed" },
+        { assessment: "SBA",   grade: "Grade 8", year: 2025, candidates: 70, score: 60, status: "Completed" },
+      ],
+      learningAreas: [
+        { name: "Mathematics",          grade: "1–9", mean: 68, exceeding: 24, meeting: 44, approaching: 22, below: 10 },
+        { name: "English",              grade: "1–9", mean: 64, exceeding: 20, meeting: 44, approaching: 26, below: 10 },
+        { name: "Kiswahili",            grade: "1–9", mean: 67, exceeding: 22, meeting: 46, approaching: 22, below: 10 },
+        { name: "Science & Technology", grade: "1–9", mean: 62, exceeding: 16, meeting: 44, approaching: 28, below: 12 },
+        { name: "Social Studies",       grade: "1–9", mean: 70, exceeding: 26, meeting: 44, approaching: 20, below: 10 },
+      ],
+    },
+    2024: {
+      summary: "Summary of the school's assessment performance for 2024.",
+      kpi: { candidates: 160, areas: 12, projects: 3, performance: "65%" },
+      areas: [
+        { name: "Mathematics",          value: 64, level: "average" },
+        { name: "English",              value: 61, level: "average" },
+        { name: "Kiswahili",            value: 64, level: "average" },
+        { name: "Science & Technology", value: 59, level: "average" },
+        { name: "Social Studies",       value: 67, level: "good" },
+      ],
+      levels: [
+        { label: "Exceeding Expectation",   count: 20, cls: "exceeding",   key: "d-exceeding"   },
+        { label: "Meeting Expectation",     count: 34, cls: "meeting",     key: "d-meeting"     },
+        { label: "Approaching Expectation", count: 28, cls: "approaching", key: "d-approaching" },
+        { label: "Below Expectation",       count: 14, cls: "below",       key: "d-below"       },
+      ],
+      trend: [
+        { year: 2023, score: 61 },
+        { year: 2024, score: 65 },
+      ],
+      results: [
+        { assessment: "KPSEA", grade: "Grade 6", year: 2024, candidates: 74, score: 64, status: "Completed" },
+        { assessment: "KJSEA", grade: "Grade 9", year: 2024, candidates: 52, score: 62, status: "Completed" },
+      ],
+      learningAreas: [
+        { name: "Mathematics",          grade: "1–9", mean: 64, exceeding: 20, meeting: 44, approaching: 26, below: 10 },
+        { name: "English",              grade: "1–9", mean: 61, exceeding: 16, meeting: 44, approaching: 28, below: 12 },
+        { name: "Kiswahili",            grade: "1–9", mean: 64, exceeding: 20, meeting: 44, approaching: 26, below: 10 },
+        { name: "Science & Technology", grade: "1–9", mean: 59, exceeding: 14, meeting: 44, approaching: 30, below: 12 },
+        { name: "Social Studies",       grade: "1–9", mean: 67, exceeding: 22, meeting: 46, approaching: 22, below: 10 },
+      ],
+    },
+    2023: {
+      summary: "Summary of the school's assessment performance for 2023.",
+      kpi: { candidates: 148, areas: 12, projects: 3, performance: "61%" },
+      areas: [
+        { name: "Mathematics",          value: 60, level: "average" },
+        { name: "English",              value: 57, level: "average" },
+        { name: "Kiswahili",            value: 60, level: "average" },
+        { name: "Science & Technology", value: 55, level: "average" },
+        { name: "Social Studies",       value: 63, level: "average" },
+      ],
+      levels: [
+        { label: "Exceeding Expectation",   count: 16, cls: "exceeding",   key: "d-exceeding"   },
+        { label: "Meeting Expectation",     count: 30, cls: "meeting",     key: "d-meeting"     },
+        { label: "Approaching Expectation", count: 30, cls: "approaching", key: "d-approaching" },
+        { label: "Below Expectation",       count: 16, cls: "below",       key: "d-below"       },
+      ],
+      trend: [
+        { year: 2023, score: 61 },
+      ],
+      results: [
+        { assessment: "KPSEA", grade: "Grade 6", year: 2023, candidates: 68, score: 60, status: "Completed" },
+        { assessment: "KJSEA", grade: "Grade 9", year: 2023, candidates: 48, score: 58, status: "Completed" },
+      ],
+      learningAreas: [
+        { name: "Mathematics",          grade: "1–9", mean: 60, exceeding: 16, meeting: 44, approaching: 28, below: 12 },
+        { name: "English",              grade: "1–9", mean: 57, exceeding: 12, meeting: 44, approaching: 30, below: 14 },
+        { name: "Kiswahili",            grade: "1–9", mean: 60, exceeding: 16, meeting: 44, approaching: 28, below: 12 },
+        { name: "Science & Technology", grade: "1–9", mean: 55, exceeding: 10, meeting: 44, approaching: 32, below: 14 },
+        { name: "Social Studies",       grade: "1–9", mean: 63, exceeding: 18, meeting: 46, approaching: 26, below: 10 },
+      ],
+    },
+  };
+
+  /* =========================================================
+     PER-ASSESSMENT DATA (KPSEA / KJSEA / KCSE)
+     - subjects: candidates who sat each subject + mean
+     - trend:    mean by year for the assessment's chart
+  ========================================================= */
+  const ASSESSMENT_DATA = {
+    kpsea: {
+      label: "KPSEA",
+      meanSuffix: "%",
+      subjects: [
+        { name: "Mathematics",          candidates: 86, mean: 74, exceeding: 32, meeting: 44, below: 10 },
+        { name: "English",              candidates: 86, mean: 70, exceeding: 26, meeting: 48, below: 12 },
+        { name: "Kiswahili",            candidates: 86, mean: 73, exceeding: 30, meeting: 46, below: 10 },
+        { name: "Science & Technology", candidates: 86, mean: 68, exceeding: 22, meeting: 48, below: 16 },
+        { name: "Social Studies",       candidates: 86, mean: 76, exceeding: 34, meeting: 44, below: 8  },
+        { name: "Creative Arts",        candidates: 84, mean: 78, exceeding: 38, meeting: 42, below: 4  },
+      ],
+      trend: [
+        { year: 2023, score: 60 },
+        { year: 2024, score: 64 },
+        { year: 2025, score: 68 },
+        { year: 2026, score: 72 },
+      ],
+    },
+
+    kjsea: {
+      label: "KJSEA",
+      meanSuffix: "%",
+      subjects: [
+        { name: "Mathematics",          candidates: 62, mean: 66, exceeding: 20, meeting: 46, below: 18 },
+        { name: "English",              candidates: 62, mean: 68, exceeding: 22, meeting: 48, below: 16 },
+        { name: "Kiswahili",            candidates: 62, mean: 75, exceeding: 30, meeting: 50, below: 12 },
+        { name: "Integrated Science",   candidates: 62, mean: 64, exceeding: 18, meeting: 46, below: 22 },
+        { name: "Social Studies",       candidates: 62, mean: 71, exceeding: 26, meeting: 48, below: 14 },
+        { name: "Pre-Technical",        candidates: 60, mean: 69, exceeding: 24, meeting: 46, below: 18 },
+        { name: "Agriculture",          candidates: 58, mean: 72, exceeding: 28, meeting: 46, below: 14 },
+      ],
+      trend: [
+        { year: 2023, score: 58 },
+        { year: 2024, score: 62 },
+        { year: 2025, score: 66 },
+        { year: 2026, score: 69 },
+      ],
+    },
+
+    kcse: {
+      label: "KCSE",
+      meanSuffix: "", // mean grade, not %
+      subjects: [
+        { name: "Mathematics",          candidates: 54, mean: 8.6, ab: 22, c: 24, de: 8 },
+        { name: "English",              candidates: 54, mean: 7.4, ab: 14, c: 28, de: 12 },
+        { name: "Kiswahili",            candidates: 54, mean: 8.2, ab: 20, c: 26, de: 8 },
+        { name: "Biology",              candidates: 52, mean: 7.8, ab: 16, c: 26, de: 10 },
+        { name: "Chemistry",            candidates: 48, mean: 6.9, ab: 10, c: 26, de: 12 },
+        { name: "Physics",              candidates: 44, mean: 7.1, ab: 12, c: 22, de: 10 },
+        { name: "History & Government", candidates: 38, mean: 8.1, ab: 14, c: 18, de: 6 },
+        { name: "Geography",            candidates: 40, mean: 7.6, ab: 12, c: 22, de: 6 },
+        { name: "Business Studies",     candidates: 36, mean: 8.0, ab: 12, c: 18, de: 6 },
+      ],
+      trend: [
+        { year: 2023, score: 6.8 },
+        { year: 2024, score: 7.0 },
+        { year: 2025, score: 7.1 },
+        { year: 2026, score: 7.4 },
+      ],
+    },
+  };
+
+  const currentYear = () => Number(document.getElementById("year").value);
+  const dataset = () => DATA[currentYear()] || DATA[2026];
+
+  /* =========================================================
+     RENDER HELPERS — OVERVIEW
+  ========================================================= */
+  function renderKPIs() {
+    const k = dataset().kpi;
+    document.querySelector('[data-kpi="candidates"]').textContent  = k.candidates;
+    document.querySelector('[data-kpi="areas"]').textContent       = k.areas;
+    document.querySelector('[data-kpi="projects"]').textContent    = k.projects;
+    document.querySelector('[data-kpi="performance"]').textContent = k.performance;
+    document.querySelector("[data-summary]").textContent = dataset().summary;
+  }
+
+  function barClass(v) {
+    if (v >= 70) return "";
+    if (v >= 60) return "warn";
+    return "bad";
+  }
+
+  function renderAreas() {
+    const list = document.querySelector('[data-areas-list]');
+    if (!list) return;
+    list.innerHTML = dataset().areas.map((a) => `
+      <div class="performance-row">
+        <div class="performance-label">
+          <span>${a.name}</span>
+          <span class="performance-value">${a.value}%</span>
+        </div>
+        <div class="progress">
+          <div class="progress-bar ${barClass(a.value)}" data-width="${a.value}%"></div>
+        </div>
+      </div>
+    `).join("");
+    document.querySelector("[data-areas-subtitle]").textContent =
+      `${currentYear()} assessment performance`;
+  }
+
+  function renderLevels() {
+    const wrap = document.querySelector("[data-levels-list]");
+    if (!wrap) return;
+    const levels = dataset().levels;
+    const total = levels.reduce((s, l) => s + l.count, 0) || 1;
+
+    const dist = document.querySelector("[data-distribution]");
+    dist.innerHTML = levels.map((l) =>
+      `<span class="${l.key}" style="flex:${l.count}"></span>`
+    ).join("");
+
+    wrap.innerHTML = levels.map((l) => `
+      <div class="level">
+        <div class="level-left">
+          <span class="level-dot ${l.cls}"></span>
+          <span class="level-name">${l.label}</span>
+        </div>
+        <span class="level-count">${l.count} learners (${Math.round(l.count / total * 100)}%)</span>
+      </div>
+    `).join("");
+  }
+
+  function renderTrend() {
+    const chart = document.querySelector("[data-trend-chart]");
+    if (!chart) return;
+    const pts = dataset().trend;
+    const max = 100;
+    chart.innerHTML = pts.map((p) => `
+      <div class="year-column">
+        <div class="bar-wrapper">
+          <div class="year-bar" data-height="${(p.score / max) * 100}%"></div>
+        </div>
+        <span class="year-score">${p.score}%</span>
+        <span class="year-label">${p.year}</span>
+      </div>
+    `).join("");
+  }
+
+  function renderResults() {
+    const body = document.querySelector("[data-results-body]");
+    if (!body) return;
+    const rows = dataset().results;
+    if (!rows.length) {
+      body.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px;">No results recorded.</td></tr>`;
+      return;
+    }
+    body.innerHTML = rows.map((r) => {
+      const cls = r.score >= 70 ? "good" : r.score >= 60 ? "average" : "low";
+      const pill = r.status === "Completed" ? "" : r.status === "Pending" ? "pending" : "draft";
+      return `
+        <tr>
+          <td><strong>${r.assessment}</strong></td>
+          <td>${r.grade}</td>
+          <td>${r.year}</td>
+          <td>${r.candidates}</td>
+          <td class="score ${cls}">${r.score}%</td>
+          <td><span class="pill ${pill}">${r.status}</span></td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function renderLearningAreas() {
+    const body = document.querySelector("[data-learning-areas-body]");
+    if (!body) return;
+    body.innerHTML = dataset().learningAreas.map((a) => `
+      <tr>
+        <td><strong>${a.name}</strong></td>
+        <td>${a.grade}</td>
+        <td class="score ${a.mean >= 70 ? "good" : a.mean >= 60 ? "average" : "low"}">${a.mean}%</td>
+        <td>${a.exceeding}%</td>
+        <td>${a.meeting}%</td>
+        <td>${a.approaching}%</td>
+        <td>${a.below}%</td>
+      </tr>
+    `).join("");
+  }
+
+  /* =========================================================
+     RENDER HELPERS — KPSEA / KJSEA / KCSE
+  ========================================================= */
+  function meanClass(value, suffix) {
+    if (suffix === "%") return value >= 70 ? "good" : value >= 60 ? "average" : "low";
+    return value >= 8 ? "good" : value >= 6.5 ? "average" : "low";
+  }
+
+  function statusPill(mean, suffix) {
+    if (suffix === "%") {
+      if (mean >= 75) return { text: "Strong",     cls: "" };
+      if (mean >= 65) return { text: "Steady",     cls: "" };
+      if (mean >= 60) return { text: "Fair",       cls: "pending" };
+      return              { text: "Needs work", cls: "draft" };
+    }
+    if (mean >= 8)   return { text: "Strong",     cls: "" };
+    if (mean >= 7)   return { text: "Steady",     cls: "" };
+    if (mean >= 6.5) return { text: "Fair",       cls: "pending" };
+    return              { text: "Needs work", cls: "draft" };
+  }
+
+  function renderAssessmentSubjects(key) {
+    const cfg = ASSESSMENT_DATA[key];
+    if (!cfg) return;
+    const body = document.querySelector(`[data-${key}-subjects]`);
+    if (!body) return;
+
+    const suffix = cfg.meanSuffix;
+
+    if (key === "kcse") {
+      body.innerHTML = cfg.subjects.map((s) => {
+        const cls = meanClass(s.mean, suffix);
+        const pill = statusPill(s.mean, suffix);
+        return `
+          <tr>
+            <td><strong>${s.name}</strong></td>
+            <td>${s.candidates}</td>
+            <td class="score ${cls}">${s.mean.toFixed(2)}</td>
+            <td>${s.ab}%</td>
+            <td>${s.c}%</td>
+            <td>${s.de}%</td>
+            <td><span class="pill ${pill.cls}">${pill.text}</span></td>
+          </tr>`;
+      }).join("");
+    } else {
+      body.innerHTML = cfg.subjects.map((s) => {
+        const cls = meanClass(s.mean, suffix);
+        const pill = statusPill(s.mean, suffix);
+        return `
+          <tr>
+            <td><strong>${s.name}</strong></td>
+            <td>${s.candidates}</td>
+            <td class="score ${cls}">${s.mean}%</td>
+            <td>${s.exceeding}%</td>
+            <td>${s.meeting}%</td>
+            <td>${s.below}%</td>
+            <td><span class="pill ${pill.cls}">${pill.text}</span></td>
+          </tr>`;
+      }).join("");
+    }
+  }
+
+  function renderAssessmentKPIs(key) {
+    const cfg = ASSESSMENT_DATA[key];
+    if (!cfg) return;
+
+    const suffix = cfg.meanSuffix;
+    const totalCandidates = Math.max(...cfg.subjects.map((s) => s.candidates));
+    const weightedMean = (() => {
+      const total = cfg.subjects.reduce((sum, s) => sum + s.candidates, 0);
+      const weighted = cfg.subjects.reduce((sum, s) => sum + s.mean * s.candidates, 0);
+      return total ? weighted / total : 0;
+    })();
+    const best = [...cfg.subjects].sort((a, b) => b.mean - a.mean)[0];
+    const belowOrDE = cfg.subjects.reduce(
+      (sum, s) => sum + (s.below ?? s.de ?? 0), 0
+    );
+
+    const fmtMean = suffix === "" ? weightedMean.toFixed(2) : `${Math.round(weightedMean)}%`;
+    const fmtBest = suffix === "" ? best.mean.toFixed(2) : `${best.mean}%`;
+
+    const set = (name, value) => {
+      const el = document.querySelector(`[data-${key}-kpi="${name}"]`);
+      if (el) el.textContent = value;
+    };
+
+    set("candidates", totalCandidates);
+    set("mean", fmtMean);
+    set("best", fmtBest);
+    set("best-name", best.name);
+    set("year", currentYear());
+
+    if (key === "kcse") {
+      const uniQualified = cfg.subjects.reduce((sum, s) => sum + s.ab, 0);
+      const totalCands = Math.max(...cfg.subjects.map((s) => s.candidates));
+      const pct = Math.round((uniQualified / totalCands) * 100);
+      set("uni", `${pct}%`);
+      set("uni-count", `${uniQualified} candidates`);
+    } else {
+      const pct = Math.round((belowOrDE / (totalCandidates * cfg.subjects.length)) * 100);
+      set("below", `${pct}%`);
+      set("below-count", `${belowOrDE} learners`);
+    }
+  }
+
+  function renderAssessmentTrend(key) {
+    const cfg = ASSESSMENT_DATA[key];
+    if (!cfg) return;
+    const chart = document.querySelector(`[data-${key}-trend]`);
+    if (!chart) return;
+
+    const max = key === "kcse" ? 12 : 100;
+    chart.innerHTML = cfg.trend.map((p) => {
+      const h = Math.min(100, (p.score / max) * 100);
+      return `
+        <div class="year-column">
+          <div class="bar-wrapper">
+            <div class="year-bar" data-height="${h}%"></div>
+          </div>
+          <span class="year-score">${p.score}${cfg.meanSuffix === "%" ? "%" : ""}</span>
+          <span class="year-label">${p.year}</span>
+        </div>`;
+    }).join("");
+  }
+
+  /* Animate bars */
+  function animateBars() {
+    requestAnimationFrame(() => {
+      document.querySelectorAll(".progress-bar[data-width]").forEach((el) => {
+        el.style.width = el.dataset.width;
+      });
+      document.querySelectorAll(".year-bar[data-height]").forEach((el) => {
+        el.style.height = el.dataset.height;
+      });
+    });
+  }
+
+  function renderAll() {
+    renderKPIs();
+    renderAreas();
+    renderLevels();
+    renderTrend();
+    renderResults();
+    renderLearningAreas();
+
+    renderAssessmentKPIs("kpsea");
+    renderAssessmentSubjects("kpsea");
+    renderAssessmentTrend("kpsea");
+
+    renderAssessmentKPIs("kjsea");
+    renderAssessmentSubjects("kjsea");
+    renderAssessmentTrend("kjsea");
+
+    renderAssessmentKPIs("kcse");
+    renderAssessmentSubjects("kcse");
+    renderAssessmentTrend("kcse");
+
+    animateBars();
+  }
+
+  /* =========================================================
+     TABS
+  ========================================================= */
+  const tabs = Array.from(document.querySelectorAll(".tab"));
+  const panels = Array.from(document.querySelectorAll(".panel"));
+
+  function activateTab(id) {
+    tabs.forEach((t) => {
+      const on = t.id === id;
+      t.setAttribute("aria-selected", on ? "true" : "false");
+      t.tabIndex = on ? 0 : -1;
+    });
+    panels.forEach((p) => {
+      const on = p.getAttribute("aria-labelledby") === id;
+      p.classList.toggle("active", on);
+    });
+    animateBars();
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("click", () => activateTab(tab.id));
+    tab.addEventListener("keydown", (e) => {
+      let next = null;
+      if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
+      if (e.key === "ArrowLeft")  next = tabs[(i - 1 + tabs.length) % tabs.length];
+      if (e.key === "Home")       next = tabs[0];
+      if (e.key === "End")        next = tabs[tabs.length - 1];
+      if (next) { e.preventDefault(); next.focus(); activateTab(next.id); }
+    });
+  });
+
+  /* =========================================================
+     YEAR SELECTOR
+  ========================================================= */
+  document.getElementById("year").addEventListener("change", renderAll);
+
+  /* =========================================================
+     "View details" shortcut on the Overview card
+  ========================================================= */
+  document.querySelector("[data-goto]")?.addEventListener("click", (e) => {
+    const target = document.getElementById("tab-" + e.currentTarget.dataset.goto);
+    if (target) { activateTab(target.id); target.focus(); }
+  });
+
+  /* =========================================================
+     INIT
+  ========================================================= */
+  renderAll();
+})();
+</script>
+</body>
+</html>

@@ -20,6 +20,7 @@ import {
   Server,
   UserCog,
   Users,
+  Gauge,
 } from "lucide-react";
 import { moduleForPath } from "@/features/navigation/module-for-path";
 import { routeForModule } from "@/features/navigation/route-for-module";
@@ -34,6 +35,7 @@ const navGroups = [
       ["Enrollment", Users],
       ["Staff", UserCog],
       ["Infrastructure", Building2],
+      ["Performance", Gauge],
     ],
   },
   {

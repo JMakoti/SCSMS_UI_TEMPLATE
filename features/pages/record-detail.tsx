@@ -7,6 +7,7 @@ import {
   Building2,
   Download,
   FileBarChart2,
+  Gauge,
   MapPinned,
   Pencil,
   Trash2,
@@ -124,11 +125,13 @@ export function RecordDetail({
         ? Users
         : active === "Infrastructure"
           ? Building2
-          : active === "Reports"
-            ? FileBarChart2
-            : active === "Ward"
-              ? MapPinned
-              : BookOpen;
+          : active === "School Performance"
+             ? Gauge
+             : active === "Reports"
+                ? FileBarChart2
+                : active === "Ward"
+                  ? MapPinned
+                  : BookOpen;
 
   const fields =
     active === "Staff"
@@ -216,6 +219,16 @@ export function RecordDetail({
                 ["Phone", "+254 700 000 012"],
                 ["Email", "contact@school.example"],
                 ["Status", "Active"],
+              ]
+          : active === "School Performance"
+            ? [
+                ["School", item],
+                ["Level", "Primary"],
+                ["KNEC Code", "04122123"],
+                ["Exam Canditature", "50"],
+                ["Mean Score", "9.30"],
+                ["Subjects", "12"],
+                ["Year", "2026"],
               ]
             : active === "Ward"
               ? [
@@ -319,11 +332,13 @@ export function RecordDetail({
                 ? "STF-012"
                 : active === "Enrollment"
                   ? "ENR-2026-004"
-                  : active === "Ward"
-                    ? wardCode
-                    : active === "Reports"
-                      ? (reportDetail?.code ?? "RPT-000")
-                      : "SC-SMS RECORD"}
+                  : active === "School Performance"
+                    ? "04122123"
+                    : active === "Ward"
+                      ? wardCode
+                      : active === "Reports"
+                        ? (reportDetail?.code ?? "RPT-000")
+                        : "SC-SMS RECORD"}
             </div>
             <h1>{item}</h1>
             <div className="profile-sub">

@@ -1,12 +1,53 @@
 export type InstitutionType =
-  "PRIMARY" | "JUNIOR_SECONDARY" | "SENIOR_SECONDARY" | "INTEGRATED" | "OTHER";
+  "PRIMARY" | "JUNIOR_SECONDARY" | "SENIOR_SECONDARY" | "INTEGRATED";
 
 export type OwnershipType =
-  "PUBLIC" | "PRIVATE" | "FAITH_BASED" | "OTHER" | "UNKNOWN";
+  "PUBLIC" | "PRIVATE" | "FAITH_BASED";
 
-export type GenderType = "MIXED" | "BOYS" | "GIRLS" | "UNKNOWN";
+export type GenderType = "MIXED" | "BOYS" | "GIRLS";
 
-export type BoardingType = "DAY" | "BOARDING" | "DAY_AND_BOARDING" | "UNKNOWN";
+export type BoardingType = "DAY" | "BOARDING" | "DAY_AND_BOARDING";
+
+export type EmployerType =
+  | "GOVERMENT(TSC)"
+  | "COUNTY_GOVERNMENT"
+  | "SCHOOL_BOARD(BOM)"
+  | "PRIVATE_OWNER"
+  | "FAITH_BASED"
+  | "NGO"
+  | "AGENCY";
+
+export type InfrastructureProjectCategory =
+  | "CLASSROOMS"
+  | "ADMINISTRATION_BLOCK"
+  | "STAFF_ROOMS"
+  | "LIBRARY"
+  | "LABORATORY"
+  | "COMPUTER_LABORATORY"
+  | "WORKSHOP"
+  | "DINING_HALL"
+  | "KITCHEN"
+  | "DORMITORIES"
+  | "TOILETS_SANITATION"
+  | "WATER_SUPPLY"
+  | "ELECTRICITY_POWER"
+  | "ICT_INFRASTRUCTURE"
+  | "SPORTS_RECREATION"
+  | "PLAYGROUND"
+  | "FENCING_SECURITY"
+  | "ROADS_ACCESS"
+  | "DRAINAGE"
+  | "WASTE_MANAGEMENT"
+  | "ENVIRONMENTAL"
+  | "SPECIAL_NEEDS"
+  | "ACCESSIBILITY"
+  | "FURNITURE_FITTINGS"
+  | "TRANSPORT_FACILITIES"
+  | "STAFF_HOUSING"
+  | "MAINTENANCE_RENOVATION"
+  | "NEW_CONSTRUCTION"
+  | "EXPANSION_EXTENSION"
+  | "OTHER";
 
 export type DataConfidence = "VERIFIED" | "PARTIAL" | "SECONDARY_SOURCE";
 export type SneStatus = "YES" | "NO" | "UNKNOWN";

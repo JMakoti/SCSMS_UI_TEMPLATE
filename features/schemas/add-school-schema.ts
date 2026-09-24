@@ -4,24 +4,33 @@ import { requiredText } from "@/features/schemas/required-text";
 export const addSchoolSchema = z.object({
   schoolCode: z.string().trim().optional(),
   uicCode: z.string().trim().optional(),
+  knecCode: z.string().trim().optional(),
+  tscCode: z.string().trim().optional(),
+  regNumber: z.string().trim().optional(),
   officialName: requiredText("Official school name"),
   displayName: requiredText("Display name"),
   institutionType: z.enum([
-    "PRIMARY",
-    "JUNIOR_SECONDARY",
-    "SENIOR_SECONDARY",
-    "INTEGRATED",
+    "Regular",
+    "Intergrated",
+    "Special_Needs",
+    "Comprehensive",
   ]),
-  sourceInstitutionType: z.string().trim().optional(),
+  registrationStatus: z
+    .enum(["REGISTERED", "PENDING", "SUSPENDED", "CLOSED"])
+    .optional(),
+  level: z.enum([
+    "Primary",
+    "Junior_Secondary",
+    "Senior_School",
+  ]),
   ownershipType: z.enum([
-    "PUBLIC",
-    "PRIVATE",
-    "FAITH_BASED",
-    "OTHER",
-    "UNKNOWN",
+    "Goverment",
+    "Private",
+    "Community",
+    "NGO/Organization"
   ]),
-  genderType: z.enum(["MIXED", "BOYS", "GIRLS", "UNKNOWN"]),
-  boardingType: z.enum(["DAY", "BOARDING", "DAY_AND_BOARDING", "UNKNOWN"]),
+  genderType: z.enum(["MIXED", "BOYS", "GIRLS"]),
+  boardingType: z.enum(["DAY", "BOARDING", "DAY_AND_BOARDING"]),
   county: z.literal("Kilifi"),
   subCounty: z.literal("Rabai"),
   ward: z.string().trim().optional(),
@@ -38,5 +47,4 @@ export const addSchoolSchema = z.object({
   longitude: z.string().trim().optional(),
   sne: z.enum(["YES", "NO", "UNKNOWN"]),
   isActive: z.enum(["Active", "Inactive"]),
-  dataConfidence: z.enum(["VERIFIED", "PARTIAL", "SECONDARY_SOURCE"]),
 });

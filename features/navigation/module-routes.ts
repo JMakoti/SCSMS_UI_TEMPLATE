@@ -6,6 +6,7 @@ export const moduleRoutes: Record<string, string> = {
   Enrollment: "/enrollment",
   Staff: "/staff",
   Infrastructure: "/infrastructure",
+  Performance:"/performance",
   Reports: "/reports",
   "Data Quality": "/data-quality",
   Exports: "/exports",

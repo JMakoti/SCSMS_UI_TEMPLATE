@@ -45,7 +45,7 @@ export function AddInfrastructureDialog({
     resolver: zodResolver(infrastructureProjectSchema),
     defaultValues: {
       selectedSchool,
-      category: "Facilities",
+      category: "Classrooms",
       status: "Active",
       term: "Term 1",
       targetYear: 2026,
@@ -103,20 +103,63 @@ export function AddInfrastructureDialog({
                   </div>
                 </label>
                 <label>
+                  Project name
+                  <input
+                    {...register("contractor")}
+                    placeholder="Contractor"
+                  />
+                </label>
+                <label>
                   Project category
                   <select {...register("category")}>
-                    <option>Facilities</option>
-                    <option>Utilities</option>
-                    <option>Sanitation</option>
-                    <option>Water and environment</option>
+                    <option>Classrooms</option>
+                    <option>Administration block</option>
+                    <option>Staff rooms</option>
+                    <option>Library</option>
+                    <option>Laboratory</option>
+                    <option>Computer laboratory</option>
+                    <option>Workshop</option>
+                    <option>Dining hall</option>
+                    <option>Kitchen</option>
+                    <option>Dormitories</option>
+                    <option>Toilets and sanitation</option>
+                    <option>Water supply</option>
+                    <option>Electricity and power</option>
+                    <option>ICT infrastructure</option>
+                    <option>Sports and recreation</option>
+                    <option>Playground</option>
+                    <option>School fencing and security</option>
+                    <option>Roads and access</option>
+                    <option>Drainage</option>
+                    <option>Waste management</option>
+                    <option>Environmental projects</option>
+                    <option>Special needs facilities</option>
+                    <option>Accessibility facilities</option>
+                    <option>Furniture and fittings</option>
+                    <option>School transport facilities</option>
+                    <option>Staff housing</option>
+                    <option>Maintenance and renovation</option>
+                    <option>New construction</option>
+                    <option>Expansion and extension</option>
+                    <option>Other</option>
+                  </select>
+                </label>
+                <label>
+                  Infrastructure Condition
+                  <select {...register("infrastructureCondition")}>
+                    <option>Good</option>
+                    <option>Fair</option>
+                    <option>Poor</option>
+                    <option>Need Replacement</option>
                   </select>
                 </label>
                 <label>
                   Project status
                   <select {...register("status")}>
                     <option>Active</option>
-                    <option>Pending</option>
+                    <option>Ongoing</option>
                     <option>Completed</option>
+                    <option>Delayed</option>
                   </select>
                 </label>
                 <label>
@@ -138,6 +181,20 @@ export function AddInfrastructureDialog({
                     type="number"
                     min="2026"
                     placeholder="2026"
+                  />
+                </label>
+                <label>
+                  Year Started
+                  <input
+                    {...register("dateStarted", { valueAsNumber: true })}
+                    type="date"
+                  />
+                </label>
+                <label>
+                  Completed Date
+                  <input
+                    {...register("dateCompleted", { valueAsNumber: true })}
+                    type="date"
                   />
                 </label>
                 <label className="form-grid-full">
