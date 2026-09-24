@@ -401,9 +401,9 @@ export function DetailTabs({
           </button>
         ))}
       </div>
-{active === "School Performance" && tab === "KJSEA" && (
-        <PerformanceContent detail school={item} />
-      )}
+  {active === "School Performance" && tab === "Overview" && (
+    <PerformanceContent detail school={item} />
+  )}
       {tab === "Schools" && active === "Ward" && <WardSchoolsTab ward={item} />}
       {tab === "Report information" && active === "Reports" && (
         <ReportInformationTab report={item} />
