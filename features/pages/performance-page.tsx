@@ -1,6 +1,5 @@
-import { ArrowUpRight, CalendarDays, ChartNoAxesCombined, GraduationCap, School, Target } from "lucide-react";
 import { rabaiSchools } from "@/seeders/rabai-schools";
-import PerformanceTrends, { type AssessmentKey } from "@/features/pages/performamce-trend";
+import type { AssessmentKey } from "@/features/pages/performamce-trend";
 
 export function getSchoolAssessment(school: string): AssessmentKey {
   const normalized = school.toLowerCase();
@@ -11,49 +10,20 @@ export function getSchoolAssessment(school: string): AssessmentKey {
 
 const defaultPerformanceSchool = [...rabaiSchools].sort((a, b) => a.displayName.localeCompare(b.displayName))[0]?.displayName ?? "Not provided";
 
-const assessmentDetails = {
-  KPSEA: { level: "Primary school", name: "Kenya Primary School Education Assessment", score: "72.4%", candidates: "48", change: "+4.8%", descriptor: "Learner proficiency across the six primary learning areas", subjects: ["Mathematics", "English", "Kiswahili", "Science & Technology", "Agriculture", "Creative Arts"] },
-  KJSEA: { level: "Junior school", name: "Kenya Junior School Education Assessment", score: "68.5%", candidates: "41", change: "+3.2%", descriptor: "Junior school learning area outcomes for the latest cohort", subjects: ["Mathematics", "English", "Kiswahili", "Integrated Science", "Social Studies", "Creative Arts"] },
-  KCSE: { level: "Secondary school", name: "Kenya Certificate of Secondary Education", score: "7.31", candidates: "36", change: "+0.42", descriptor: "Mean grade performance across the school&apos;s secondary cohort", subjects: ["English", "Kiswahili", "Mathematics", "Biology", "Chemistry", "History & Government"] },
+const assessments = {
+  KPSEA: { title: "KPSEA", subtitle: "Kenya Primary School Education Assessment — Grade 6", candidates: "86", mean: "73%", best: "78%", bestSubject: "Creative Arts", below: "12%", belowLearners: "60 learners", areas: ["Mathematics", "English", "Kiswahili", "Science & Technology", "Social Studies", "Creative Arts"], scores: ["74%", "70%", "73%", "68%", "76%", "78%"], years: ["60%", "64%", "68%", "72%"] },
+  KJSEA: { title: "KJSEA", subtitle: "Kenya Junior School Education Assessment — Grade 9", candidates: "72", mean: "69%", best: "75%", bestSubject: "English", below: "15%", belowLearners: "54 learners", areas: ["Mathematics", "English", "Kiswahili", "Integrated Science", "Social Studies", "Creative Arts"], scores: ["70%", "75%", "68%", "66%", "71%", "73%"], years: ["57%", "61%", "65%", "69%"] },
+  KCSE: { title: "KCSE", subtitle: "Kenya Certificate of Secondary Education", candidates: "64", mean: "7.3", best: "8.1", bestSubject: "English", below: "18%", belowLearners: "42 learners", areas: ["English", "Kiswahili", "Mathematics", "Biology", "Chemistry", "History & Government"], scores: ["8.1", "7.5", "7.2", "6.8", "7.4", "7.6"], years: ["6.4", "6.7", "7.0", "7.3"] },
 } as const;
 
-export default function PerformanceContent({ detail = false, school = defaultPerformanceSchool }: { detail?: boolean; school?: string }) {
+export default function PerformanceContent({ school = defaultPerformanceSchool }: { detail?: boolean; school?: string }) {
   const assessmentKey = getSchoolAssessment(school);
-  if (!detail) return <PerformanceTrends assessmentKey={assessmentKey} />;
-
-  const details = assessmentDetails[assessmentKey];
-  return (
-    <section className="panel detail-panel school-performance-panel">
-      <header className="school-performance-hero">
-        <div className="school-performance-identity">
-          <div className="school-performance-icon"><School /></div>
-          <div>
-            <p className="school-performance-kicker">School performance</p>
-            <h2>{school}</h2>
-            <p>{assessmentKey} · {details.level}</p>
-          </div>
-        </div>
-        <div className="school-performance-period"><CalendarDays /><span>2023 – 2026 reporting period</span></div>
-      </header>
-
-      <div className="school-performance-summary">
-        <div className="school-performance-score"><span>Latest mean score</span><strong>{details.score}</strong><small>2026 assessment</small></div>
-        <div className="school-performance-summary-copy"><span className="school-performance-eyebrow">{assessmentKey} assessment</span><h3>{details.name}</h3><p>{details.descriptor}</p></div>
-        <div className="school-performance-change"><ArrowUpRight /><strong>{details.change}</strong><span>vs previous assessment</span></div>
-      </div>
-
-      <div className="school-performance-content-grid">
-        <div className="school-performance-trend-block">
-          <div className="school-performance-section-heading"><div><span className="school-performance-section-icon"><ChartNoAxesCombined /></span><div><h3>Performance movement</h3><p>Track the school&apos;s mean score across reporting years.</p></div></div><span className="school-performance-level"><GraduationCap /> {details.level}</span></div>
-          <PerformanceTrends assessmentKey={assessmentKey} />
-        </div>
-        <aside className="school-performance-subjects" aria-label={`${assessmentKey} assessment summary`}>
-          <div className="school-performance-section-heading"><div><span className="school-performance-section-icon"><Target /></span><div><h3>Assessment snapshot</h3><p>Coverage for the latest cohort.</p></div></div></div>
-          <div className="school-performance-snapshot"><div><strong>{details.candidates}</strong><span>candidates</span></div><div><strong>{details.subjects.length}</strong><span>learning areas</span></div></div>
-          <div className="school-performance-subject-list">{details.subjects.map((subject, index) => <div key={subject}><span>{String(index + 1).padStart(2, "0")}</span><strong>{subject}</strong><span className="school-performance-subject-status">Included</span></div>)}</div>
-        </aside>
-      </div>
-    </section>
-  );
+  const data = assessments[assessmentKey];
+  return <section className="panel detail-panel performance-overview">
+    <header className="performance-overview-heading"><h2>{data.title}</h2><p>{data.subtitle}</p></header>
+    <div className="performance-metric-grid">{[["Candidates", data.candidates, "01", "Grade 6 · 2026"], ["Overall mean", data.mean, "M", "+4.2% vs previous year"], ["Best subject", data.best, "★", data.bestSubject], ["Below expectation", data.below, "↓", data.belowLearners]].map(([label, value, icon, note]) => <article className="performance-metric-card" key={label}><span>{label}</span><b>{icon}</b><strong>{value}</strong><small>{note}</small></article>)}</div>
+    <section className="performance-subject-panel"><div className="performance-section-title"><div><h3>Subject Performance</h3><p>Candidates who sat each subject and their mean score — 2026</p></div></div><div className="performance-table-scroll"><table className="performance-table"><thead><tr><th>Subject</th><th>Candidates</th><th>Mean</th><th>Exceeding</th><th>Meeting</th><th>Below</th><th>Status</th></tr></thead><tbody>{data.areas.map((area, index) => <tr key={area}><th>{area}</th><td>{index === 5 ? "84" : data.candidates}</td><td className="score-good">{data.scores[index]}</td><td>{["32%", "26%", "30%", "22%", "34%", "38%"][index]}</td><td>{["44%", "48%", "46%", "48%", "44%", "42%"][index]}</td><td>{["10%", "12%", "10%", "16%", "8%", "4%"][index]}</td><td><span className="performance-status">● {index > 3 ? "Strong" : "Steady"}</span></td></tr>)}</tbody></table></div></section>
+    <section className="performance-trend-panel"><div className="performance-section-title"><div><h3>{data.title} Trend</h3><p>Mean score by year</p></div><button type="button">All assessments⌄</button></div><div className="performance-bars">{data.years.map((score, index) => <div className="performance-bar-column" key={score}><div className="performance-bar" style={{ height: `${42 + index * 12}px` }} /><strong>{score}</strong><small>{2023 + index}</small></div>)}</div></section>
+  </section>;
 }
 
