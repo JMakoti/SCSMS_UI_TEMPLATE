@@ -383,32 +383,34 @@ export function RecordDetail({
         </div>
       </div>
       <DetailTabs active={active} item={item} onTabChange={setSelectedTab} />
-      <div
-        className={`profile-grid ${selectedTab === "Overview" ? "" : "enrollment-overview-hidden"}`}
-      >
-        {active === "Reports" && reportDetail ? (
-          <ReportOverviewContent report={reportDetail} />
-        ) : active === "School Performance" ? (
-          <PerformanceContent detail school={item} />
-        ) : (
-          <section className="panel detail-panel">
-            <div className="panel-header">
-              <div>
-                <h2>Record information</h2>
-                <p>Official {active.toLowerCase()} details</p>
-              </div>
-            </div>
-            <dl className="detail-list">
-              {fields.map(([label, value]) => (
-                <div key={label}>
-                  <dt>{label}</dt>
-                  <dd>{value}</dd>
+      {active === "School Performance" ? (
+        <PerformanceContent detail school={item} />
+      ) : (
+        <div
+          className={`profile-grid ${selectedTab === "Overview" ? "" : "enrollment-overview-hidden"}`}
+        >
+          {active === "Reports" && reportDetail ? (
+            <ReportOverviewContent report={reportDetail} />
+          ) : (
+            <section className="panel detail-panel">
+              <div className="panel-header">
+                <div>
+                  <h2>Record information</h2>
+                  <p>Official {active.toLowerCase()} details</p>
                 </div>
-              ))}
-            </dl>
-          </section>
-        )}
-      </div>
+              </div>
+              <dl className="detail-list">
+                {fields.map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
+        </div>
+      )}
     </div>
   );
 }
