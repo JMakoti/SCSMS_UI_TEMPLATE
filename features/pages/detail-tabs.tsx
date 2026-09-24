@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   Building2,
@@ -366,6 +366,12 @@ export function DetailTabs({
 }) {
   const [tab, setTab] = useState("Overview");
   const [term, setTerm] = useState("Term 1");
+  const assessmentTab = getSchoolAssessment(item);
+  useEffect(() => {
+    if (active === "School Performance" && !["Overview", assessmentTab, "Trends"].includes(tab)) {
+      setTab("Overview");
+    }
+  }, [active, assessmentTab, tab]);
   const tabs =
     active === "Enrollment"
       ? ["Overview", "Enrollment"]
@@ -380,7 +386,7 @@ export function DetailTabs({
               : active === "Reports"
                 ? ["Overview", "Report information"]
                 : active === "School Performance"
-                  ? ["Overview", "KPSEA", "KJSEA", "KCSE", "SBA", "Learning Areas", "Trends"]
+                  ? ["Overview", assessmentTab, "Trends"]
                   : ["Overview"];
 
   const selectTab = (nextTab: string) => {
@@ -401,9 +407,10 @@ export function DetailTabs({
           </button>
         ))}
       </div>
-  {active === "School Performance" && (tab === "Overview" || tab === "KJSEA") && (
-  <PerformanceContent detail school={item} overview={tab === "Overview"} />
-  )}
+      {active === "School Performance" &&
+        (tab === "Overview" || tab === assessmentTab || tab === "Trends") && (
+          <PerformanceContent detail school={item} overview={tab === "Overview"} />
+        )}
 
       {tab === "Schools" && active === "Ward" && <WardSchoolsTab ward={item} />}
       {tab === "Report information" && active === "Reports" && (
