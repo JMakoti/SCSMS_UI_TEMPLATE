@@ -3422,6 +3422,27 @@ tbody tr:hover {
 .performance-bar { width: 36px; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #5fa9ff, #2563eb); }
 .performance-bar-column strong { color: #f5f8ff; font-size: 10px; }
 .performance-bar-column small { color: #8da6c5; font-size: 9px; }
+.performance-overview-light { background: #f7f9fc; }
+.performance-overview-light .performance-overview-heading h2 { color: #1e3a5f; }
+.performance-overview-light .performance-overview-heading p { color: #718096; }
+.performance-overview-light .performance-metric-card,
+.performance-overview-light .performance-subject-panel,
+.performance-overview-light .performance-trend-panel { border-color: #dce5ef; background: #fff; }
+.performance-overview-light .performance-metric-card > span { color: #52657d; }
+.performance-overview-light .performance-metric-card b { color: #2563eb; background: #eaf1ff; }
+.performance-overview-light .performance-metric-card strong { color: #1e3a5f; }
+.performance-overview-light .performance-metric-card small { color: #718096; }
+.performance-overview-light .performance-section-title { border-bottom-color: #e1e8f0; }
+.performance-overview-light .performance-section-title h3 { color: #1e3a5f; }
+.performance-overview-light .performance-section-title p { color: #718096; }
+.performance-overview-light .performance-section-title button { border-color: #dce5ef; color: #1e3a5f; background: #f8fafc; }
+.performance-overview-light .performance-table th,
+.performance-overview-light .performance-table td { border-bottom-color: #e7edf5; color: #52657d; }
+.performance-overview-light .performance-table thead th { color: #718096; }
+.performance-overview-light .performance-table tbody th { color: #1e3a5f; }
+.performance-overview-light .performance-status { color: #138a5b; background: #e8f7ef; }
+.performance-overview-light .performance-bar-column strong { color: #1e3a5f; }
+.performance-overview-light .performance-bar-column small { color: #718096; }
 @media (max-width: 720px) { .performance-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .performance-bars { padding-inline: 8px; } }
 .report-workspace {
   display: grid;
