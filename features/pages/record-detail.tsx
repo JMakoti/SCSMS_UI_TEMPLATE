@@ -23,7 +23,7 @@ import {
   getRabaiSchoolsByWard,
   rabaiSchoolYears,
 } from "@/seeders/rabai-schools";
-import PerformanceContent from "@/features/pages/performance-page";
+import { getReportDetail } from "@/seeders/reports";
 
 export function RecordDetail({
   active,
@@ -37,6 +37,7 @@ export function RecordDetail({
   const [selectedTab, setSelectedTab] = useState("Overview");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { currentAcademicYear } = useAcademicYear();
+  const reportDetail = active === "Reports" ? getReportDetail(item) : null;
   const wardSchools = active === "Ward" ? getRabaiSchoolsByWard(item) : [];
   const wardSchoolIds = new Set(wardSchools.map((school) => school.id));
   const wardYearRows = rabaiSchoolYears.filter(
@@ -323,9 +324,7 @@ export function RecordDetail({
         </div>
       </div>
       <DetailTabs active={active} item={item} onTabChange={setSelectedTab} />
-      {active === "School Performance" ? (
-        <PerformanceContent detail school={item} />
-      ) : (
+      {active !== "School Performance" && (
         <div
           className={`profile-grid ${selectedTab === "Overview" ? "" : "enrollment-overview-hidden"}`}
         >
