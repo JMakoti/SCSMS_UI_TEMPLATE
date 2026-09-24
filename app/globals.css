@@ -3587,7 +3587,31 @@ tbody tr:hover {
 .overview-level { display: flex; align-items: center; gap: 8px; min-height: 35px; padding: 0 10px; border: 1px solid #dce5ef; border-radius: 7px; color: #1e3a5f; font-size: 10px; }
 .overview-level small { margin-left: auto; color: #52657d; }
 .overview-level .level-exceeding { color: #16a34a; } .overview-level .level-meeting { color: #2563eb; } .overview-level .level-approaching { color: #f59e0b; } .overview-level .level-below { color: #ef4444; }
-@media (max-width: 720px) { .performance-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .performance-bars { padding-inline: 8px; } .overview-content-grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .performance-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .performance-bars { padding-inline: 8px; }
+  .overview-content-grid { grid-template-columns: 1fr; }
+  .performance-overview-heading h2 { font-size: 18px; }
+  .performance-overview-heading p { max-width: 28ch; line-height: 1.45; }
+  .performance-section-title { align-items: flex-start; flex-direction: column; gap: 6px; }
+  .performance-section-title h3 { font-size: 12px; }
+  .performance-section-title p { line-height: 1.4; }
+  .trends-line-panel .performance-section-title { padding: 12px 10px; }
+  .trend-axis-note { align-self: flex-start; max-width: 100%; font-size: 9px; line-height: 1.35; text-align: left; }
+  .trend-chart-shell { padding: 0 4px 8px; }
+  .trend-chart-legend { padding: 10px 6px 0; }
+  .trends-line-panel [class~="h-[300px]"] { height: 220px; padding: 14px 0 8px; }
+}
+@media (max-width: 380px) {
+  .performance-metric-grid { gap: 7px; }
+  .performance-metric-card { min-height: 72px; padding: 10px; }
+  .performance-metric-card strong { font-size: 17px; }
+  .performance-metric-card b { top: 9px; right: 9px; padding: 5px 6px; }
+  .performance-overview { gap: 12px; }
+  .performance-overview-heading h2 { font-size: 17px; }
+  .performance-section-title h3 { font-size: 11px; }
+  .trends-line-panel [class~="h-[300px]"] { height: 190px; }
+}
 .report-workspace {
   display: grid;
   grid-template-columns: 248px minmax(0, 1fr);
