@@ -1,5 +1,12 @@
 import { rabaiSchools } from "@/seeders/rabai-schools";
-import PerformanceTrends from "@/features/pages/performamce-trend";
+import PerformanceTrends, { type AssessmentKey } from "@/features/pages/performamce-trend";
+
+export function getSchoolAssessment(school: string): AssessmentKey {
+  const normalized = school.toLowerCase();
+  if (normalized.includes("junior") || normalized.includes("jss")) return "KJSEA";
+  if (normalized.includes("secondary") || normalized.includes("senior")) return "KCSE";
+  return "KPSEA";
+}
 
 const registrySchools = [...rabaiSchools].sort((a, b) =>
   a.displayName.localeCompare(b.displayName),
@@ -14,7 +21,9 @@ export default function PerformanceContent({
   detail?: boolean;
   school?: string;
 }) {
-  if (!detail) return <PerformanceTrends />;
+  const assessmentKey = getSchoolAssessment(school);
+
+  if (!detail) return <PerformanceTrends assessmentKey={assessmentKey} />;
 
   return (
     <section className="panel detail-panel report-overview-panel">
@@ -31,7 +40,7 @@ export default function PerformanceContent({
         <div><dt>Latest mean score</dt><dd>9.30</dd></div>
         <div><dt>Subjects assessed</dt><dd>12</dd></div>
       </dl>
-      <PerformanceTrends />
+      <PerformanceTrends assessmentKey={assessmentKey} />
     </section>
   );
 }
