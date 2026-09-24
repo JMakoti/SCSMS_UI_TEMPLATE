@@ -1,5 +1,6 @@
 import { rabaiSchools } from "@/seeders/rabai-schools";
-import type { AssessmentKey } from "@/features/pages/performamce-trend";
+
+type AssessmentKey = "KCSE" | "KJSEA" | "KPSEA";
 
 export function getSchoolAssessment(school: string): AssessmentKey {
   const normalized = school.toLowerCase();
