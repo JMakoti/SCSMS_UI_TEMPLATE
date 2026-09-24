@@ -26,12 +26,20 @@ import StatusBadge from "@/features/ui/status-badge";
 import SchoolContactsContent from "@/features/pages/contacts-page";
 import InfrastructureContent from "@/features/pages/infrastructure-page";
 import PerformanceContent from "@/features/pages/performance-page";
+import PerformanceTrends, { type AssessmentKey } from "@/features/pages/performamce-trend";
 import { EnrollmentGradeTable } from "@/features/pages/enrollment-page";
 import {
   getRabaiSchoolsByWard,
   rabaiSchoolYears,
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
+
+function getTrendAssessmentKey(school: string): AssessmentKey | undefined {
+  const normalized = school.toLowerCase();
+  if (normalized.includes("junior") || normalized.includes("jss")) return "KJSEA";
+  if (normalized.includes("secondary") || normalized.includes("senior")) return "KCSE";
+  return "KPSEA";
+}
 
 function WardSchoolsTab({ ward }: { ward: string }) {
   const { currentAcademicYear } = useAcademicYear();
@@ -401,9 +409,13 @@ export function DetailTabs({
           </button>
         ))}
       </div>
-{active === "School Performance" && (tab === "Overview" || tab === "KJSEA") && (
-        <PerformanceContent detail school={item} overview={tab === "Overview"} />
-      )}
+  {active === "School Performance" && (tab === "Overview" || tab === "KJSEA") && (
+  <PerformanceContent detail school={item} overview={tab === "Overview"} />
+  )}
+  {active === "School Performance" && tab === "Trends" && (
+  <PerformanceTrends assessmentKey={getTrendAssessmentKey(item)} />
+  )}
+
       {tab === "Schools" && active === "Ward" && <WardSchoolsTab ward={item} />}
       {tab === "Report information" && active === "Reports" && (
         <ReportInformationTab report={item} />
