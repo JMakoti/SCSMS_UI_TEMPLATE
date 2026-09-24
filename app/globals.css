@@ -3341,6 +3341,125 @@ tbody tr:hover {
   .school-performance-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .school-performance-section-heading { align-items: flex-start; flex-direction: column; }
 }
+
+/* Keep record detail usable on narrow screens without shrinking content into a scroll trap. */
+@media (max-width: 900px) {
+  .profile-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .profile-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .profile-actions > button {
+    flex: 1 1 auto;
+  }
+
+  .profile-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile-grid:has(.detail-panel:only-child) .detail-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-crumb {
+    margin-bottom: 14px;
+  }
+
+  .profile-title {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .profile-title h1 {
+    max-width: calc(100vw - 100px);
+    overflow-wrap: anywhere;
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
+  .profile-sub {
+    flex-wrap: wrap;
+  }
+
+  .profile-tabs {
+    gap: 18px;
+    margin-inline: -14px;
+    overflow-x: auto;
+    padding-inline: 14px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .profile-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .profile-tabs button {
+    flex: 0 0 auto;
+    min-height: 38px;
+    white-space: nowrap;
+  }
+
+  .profile-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-actions > button {
+    width: 100%;
+  }
+
+  .profile-grid:has(.detail-panel:only-child) .detail-list,
+  .detail-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .detail-panel {
+    padding: 15px;
+  }
+
+  .school-performance-content-grid {
+    padding-inline: 14px;
+  }
+
+  .school-performance-hero,
+  .school-performance-section-heading {
+    padding-inline: 14px;
+  }
+
+  .school-performance-metrics {
+    padding-inline: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .profile-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile-school-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .school-performance-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .school-performance-summary {
+    margin-inline: 14px;
+    padding: 14px;
+  }
+}
 .report-detail-list {
   margin-bottom: 18px;
 }
