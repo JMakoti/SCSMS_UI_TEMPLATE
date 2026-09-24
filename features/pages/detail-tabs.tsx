@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
   AlertTriangle,
   Building2,
   ChevronLeft,
@@ -289,6 +298,42 @@ function ReportPreviewBody({
   );
 }
 
+function TrendsTab({ school }: { school: string }) {
+  const assessment = getSchoolAssessment(school);
+  const values = assessment === "KCSE" ? [6.4, 6.7, 7, 7.3] : assessment === "KJSEA" ? [57, 61, 65, 69] : [60, 64, 68, 72];
+  const suffix = assessment === "KCSE" ? "" : "%";
+  const chartData = values.map((mean, index) => ({ year: String(2023 + index), mean }));
+
+  return (
+    <section className="panel detail-panel performance-overview performance-overview-light">
+      <header className="performance-overview-heading">
+        <h2>{assessment} Trends</h2>
+        <p>Mean score against the year of the exam</p>
+      </header>
+      <section className="performance-trend-panel trends-line-panel">
+        <div className="performance-section-title">
+          <div>
+            <h3>Mean score by year</h3>
+            <p>Historical {assessment} examination performance</p>
+          </div>
+          <span className="trend-axis-note">Y-axis: Mean score · X-axis: Exam year</span>
+        </div>
+        <div className="h-[300px] w-full px-2 py-5">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData} margin={{ top: 12, right: 18, left: 4, bottom: 8 }}>
+            <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 4" />
+            <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={10} />
+            <YAxis domain={assessment === "KCSE" ? [6, 8] : [50, 80]} tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `${value}${suffix}`} width={42} />
+            <Tooltip formatter={(value) => [`${value}${suffix}`, "Mean score"]} />
+            <Line dataKey="mean" type="monotone" stroke="var(--primary)" strokeWidth={3} dot={{ r: 5, fill: "var(--primary)" }} activeDot={{ r: 7 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
+    </section>
+  );
+}
+
 function ReportInformationTab({ report }: { report: string }) {
   const detail = getReportDetail(report);
   const SelectedIcon = getReportIcon(detail.key);
@@ -409,8 +454,11 @@ export function DetailTabs({
           </button>
         ))}
       </div>
+      {active === "School Performance" && tab === "Trends" && (
+        <TrendsTab school={item} />
+      )}
       {active === "School Performance" &&
-        (tab === "Overview" || tab === assessmentTab || tab === "Trends") && (
+        (tab === "Overview" || tab === assessmentTab) && (
           <PerformanceContent detail school={item} overview={tab === "Overview"} />
         )}
 
