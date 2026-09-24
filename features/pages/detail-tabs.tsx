@@ -386,6 +386,8 @@ export function DetailTabs({
     onTabChange?.(nextTab);
   };
 
+  if (active === "School Performance") return null;
+
   return (
     <>
       <div className="profile-tabs">
