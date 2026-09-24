@@ -3416,8 +3416,18 @@ tbody tr:hover {
 .performance-table tbody tr:last-child th, .performance-table tbody tr:last-child td { border-bottom: 0; }
 .score-good { color: #19bd62 !important; }
 .performance-status { color: #18c261; background: #063d28; border-radius: 10px; padding: 3px 8px; font-size: 9px; white-space: nowrap; }
-.performance-trend-panel { overflow: hidden; }
-.performance-bars { display: flex; align-items: end; justify-content: space-around; min-height: 145px; padding: 18px 24px 12px; }
+  .performance-trend-panel { overflow: hidden; }
+  .trends-line-panel .performance-section-title { align-items: flex-start; }
+  .trend-chart-shell { position: relative; padding: 0 12px 10px; }
+  .trend-chart-legend { display: flex; align-items: center; gap: 7px; padding: 12px 8px 0; color: #9bb0cb; font-size: 10px; }
+  .trend-legend-dot { width: 8px; height: 8px; border-radius: 999px; background: #5fa9ff; box-shadow: 0 0 0 3px rgba(95, 169, 255, .14); }
+  .trends-line-panel .recharts-cartesian-axis-tick-value { fill: #8da6c5; font-size: 10px; }
+  .trends-line-panel .recharts-tooltip-wrapper { outline: none; }
+  .trends-line-panel .recharts-default-tooltip { border: 1px solid #2b3d59 !important; border-radius: 7px; background: #142137 !important; box-shadow: 0 10px 24px rgba(0, 0, 0, .22); }
+  .performance-overview-light .trend-chart-legend { color: #718096; }
+  .performance-overview-light .trends-line-panel .recharts-cartesian-axis-tick-value { fill: #718096; }
+  .performance-overview-light .trends-line-panel .recharts-default-tooltip { border-color: #dce5ef !important; background: #fff !important; }
+  .performance-bars { display: flex; align-items: end; justify-content: space-around; min-height: 145px; padding: 18px 24px 12px; }
 .performance-bar-column { display: flex; flex-direction: column; align-items: center; justify-content: end; gap: 5px; min-width: 44px; height: 126px; }
 .performance-bar { width: 36px; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #5fa9ff, #2563eb); }
 .performance-bar-column strong { color: #f5f8ff; font-size: 10px; }
