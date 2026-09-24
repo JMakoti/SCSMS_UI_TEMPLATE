@@ -24,7 +24,7 @@ import {
   rabaiSchoolYears,
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
-import PerformanceContent from "@/features/pages/performance-page";
+import PerformanceContent, { getSchoolAssessment } from "@/features/pages/performance-page";
 
 function getReportOverviewValues(reportKey: string) {
   const values = {

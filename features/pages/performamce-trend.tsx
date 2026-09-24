@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Download, TrendingUp } from "lucide-react";
 import StatusBadge from "@/features/ui/status-badge";
 
-type AssessmentKey = "KCSE" | "KJSEA" | "KPSEA";
+export type AssessmentKey = "KCSE" | "KJSEA" | "KPSEA";
 
 type AssessmentConfig = {
   key: AssessmentKey;
@@ -332,9 +332,12 @@ function TrendCard({
   );
 }
 
-export function PerformanceTrends() {
-  const [selected, setSelected] = useState<AssessmentKey>("KCSE");
-  const active = ASSESSMENTS.find((a) => a.key === selected)!;
+export function PerformanceTrends({ assessmentKey }: { assessmentKey?: AssessmentKey } = {}) {
+  const availableAssessments = assessmentKey
+    ? ASSESSMENTS.filter((assessment) => assessment.key === assessmentKey)
+    : ASSESSMENTS;
+  const [selected, setSelected] = useState<AssessmentKey>(assessmentKey ?? "KCSE");
+  const active = availableAssessments.find((a) => a.key === selected) ?? availableAssessments[0];
 
   return (
     <div className="content">
@@ -349,7 +352,7 @@ export function PerformanceTrends() {
         </div>
 
         <div className="report-stat-grid report-overview-stat-grid">
-          {ASSESSMENTS.map((a) => {
+          {availableAssessments.map((a) => {
             const first = a.scores[0];
             const last = a.scores[a.scores.length - 1];
             const pct = (((last - first) / first) * 100).toFixed(1);
