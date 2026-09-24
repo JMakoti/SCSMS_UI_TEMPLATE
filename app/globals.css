@@ -3443,7 +3443,22 @@ tbody tr:hover {
 .performance-overview-light .performance-status { color: #138a5b; background: #e8f7ef; }
 .performance-overview-light .performance-bar-column strong { color: #1e3a5f; }
 .performance-overview-light .performance-bar-column small { color: #718096; }
-@media (max-width: 720px) { .performance-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .performance-bars { padding-inline: 8px; } }
+.overview-content-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, .9fr); gap: 16px; }
+.overview-card { min-width: 0; border: 1px solid #dce5ef; border-radius: 8px; background: #fff; }
+.overview-card .performance-section-title { padding: 14px 12px; }
+.overview-card .performance-section-title > strong { color: #1e3a5f; font-size: 10px; }
+.overview-area-list { display: flex; flex-direction: column; gap: 13px; padding: 5px 12px 16px; }
+.overview-area > div { display: flex; justify-content: space-between; margin-bottom: 5px; color: #1e3a5f; font-size: 10px; }
+.overview-area > div span { color: #52657d; }
+.overview-area i { display: block; height: 4px; border-radius: 99px; background: #4183ed; }
+.overview-area i.area-orange { background: #f4ae22; }
+.overview-distribution { display: flex; height: 7px; margin: 8px 12px 12px; overflow: hidden; border-radius: 99px; }
+.overview-distribution i:nth-child(1) { width: 33%; background: #16a34a; } .overview-distribution i:nth-child(2) { width: 42%; background: #2563eb; } .overview-distribution i:nth-child(3) { width: 18%; background: #f59e0b; } .overview-distribution i:nth-child(4) { width: 7%; background: #ef4444; }
+.overview-level-list { display: flex; flex-direction: column; gap: 8px; padding: 0 12px 16px; }
+.overview-level { display: flex; align-items: center; gap: 8px; min-height: 35px; padding: 0 10px; border: 1px solid #dce5ef; border-radius: 7px; color: #1e3a5f; font-size: 10px; }
+.overview-level small { margin-left: auto; color: #52657d; }
+.overview-level .level-exceeding { color: #16a34a; } .overview-level .level-meeting { color: #2563eb; } .overview-level .level-approaching { color: #f59e0b; } .overview-level .level-below { color: #ef4444; }
+@media (max-width: 720px) { .performance-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .performance-bars { padding-inline: 8px; } .overview-content-grid { grid-template-columns: 1fr; } }
 .report-workspace {
   display: grid;
   grid-template-columns: 248px minmax(0, 1fr);
