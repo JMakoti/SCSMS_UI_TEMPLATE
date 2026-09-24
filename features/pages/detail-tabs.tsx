@@ -25,7 +25,9 @@ import { useAcademicYear } from "@/features/academic-years/academic-year-context
 import StatusBadge from "@/features/ui/status-badge";
 import SchoolContactsContent from "@/features/pages/contacts-page";
 import InfrastructureContent from "@/features/pages/infrastructure-page";
-import PerformanceContent from "@/features/pages/performance-page";
+import PerformanceContent, {
+  getSchoolAssessment,
+} from "@/features/pages/performance-page";
 import { EnrollmentGradeTable } from "@/features/pages/enrollment-page";
 import {
   getRabaiSchoolsByWard,
