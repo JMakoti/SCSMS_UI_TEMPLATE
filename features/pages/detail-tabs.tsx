@@ -31,9 +31,6 @@ import {
   rabaiSchoolYears,
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
-import PerformanceContent from "./performance-page";
-import { getSchoolAssessment } from "./performance-page";
-import PerformanceTrends from "./performamce-trend";
 
 function WardSchoolsTab({ ward }: { ward: string }) {
   const { currentAcademicYear } = useAcademicYear();
@@ -381,9 +378,7 @@ export function DetailTabs({
               ? ["Overview", "Schools"]
               : active === "Reports"
                 ? ["Overview", "Report information"]
-                : active === "School Performance"
-                  ? ["Overview", getSchoolAssessment(item), "Performance Trend"]
-                  : ["Overview"];
+                : ["Overview"];
 
 
   const selectTab = (nextTab: string) => {
@@ -410,12 +405,6 @@ export function DetailTabs({
       )}
       {tab === "Infrastructure" && (
         <InfrastructureContent detail school={item} />
-      )}
-      {(["KCSE", "KJSEA", "KPSEA"] as const).includes(tab as "KCSE" | "KJSEA" | "KPSEA") && (
-        <PerformanceContent detail school={item} />
-      )}
-      {tab === "Performance Trend" && (
-        <PerformanceTrends assessmentKey={getSchoolAssessment(item)} />
       )}
       {tab === "Contacts" && <SchoolContactsContent school={item} />}
       {tab === "Enrollment" && active === "Schools" && (
