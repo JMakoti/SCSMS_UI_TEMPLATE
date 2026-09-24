@@ -3298,8 +3298,25 @@ tbody tr:hover {
   color: #138a5b;
   background: #e3f6ed;
 }
-.school-performance-level { display: flex; align-items: center; gap: 5px; color: #64748b; font-size: 11px; font-weight: 700; }
-.school-performance-panel > .content { padding-top: 0; }
+  .school-performance-level { display: flex; align-items: center; gap: 5px; color: #64748b; font-size: 11px; font-weight: 700; }
+  .school-performance-content-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(250px, .75fr); gap: 18px; padding: 0 22px 22px; }
+  .school-performance-trend-block, .school-performance-subjects { min-width: 0; border: 1px solid #e7edf5; border-radius: 12px; background: #fff; }
+  .school-performance-trend-block .school-performance-section-heading { padding: 16px 18px 4px; }
+  .school-performance-subjects { align-self: start; padding: 18px; }
+  .school-performance-subjects-heading h3 { margin: 0; color: #1e3a5f; font-size: 14px; }
+  .school-performance-subjects-heading p { margin: 4px 0 0; color: #718096; font-size: 11px; line-height: 1.5; }
+  .school-performance-subjects-heading > div { display: flex; gap: 10px; align-items: flex-start; }
+  .school-performance-candidate-count { display: flex; align-items: baseline; gap: 8px; margin: 20px 0 14px; padding: 13px 14px; border-radius: 10px; background: #f4f8ff; }
+  .school-performance-candidate-count strong { color: #2563eb; font-size: 25px; line-height: 1; }
+  .school-performance-candidate-count span { color: #52657d; font-size: 11px; font-weight: 700; }
+  .school-performance-subject-list { display: grid; gap: 8px; }
+  .school-performance-subject-list > div { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #eef2f7; }
+  .school-performance-subject-list > div:last-child { border-bottom: 0; }
+  .school-performance-subject-list span { color: #9aa8ba; font-size: 10px; font-weight: 800; }
+  .school-performance-subject-list strong { color: #334e68; font-size: 12px; }
+  .school-performance-panel > .content { padding-top: 0; }
+  @media (max-width: 900px) { .school-performance-content-grid { grid-template-columns: 1fr; } }
+
 @media (max-width: 720px) {
   .school-performance-hero { align-items: flex-start; flex-direction: column; }
   .school-performance-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }

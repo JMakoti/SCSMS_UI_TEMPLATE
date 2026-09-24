@@ -28,8 +28,26 @@ export default function PerformanceContent({
 
   const schoolLevel = assessmentKey === "KPSEA" ? "Primary school" : assessmentKey === "KJSEA" ? "Junior school" : "Secondary school";
   const assessmentName = assessmentKey === "KPSEA" ? "Kenya Primary School Education Assessment" : assessmentKey === "KJSEA" ? "Kenya Junior School Education Assessment" : "Kenya Certificate of Secondary Education";
-  const latestScore = assessmentKey === "KPSEA" ? "72.4%" : assessmentKey === "KJSEA" ? "68.5%" : "7.31";
-  const subjects = assessmentKey === "KPSEA" ? "6 learning areas" : assessmentKey === "KJSEA" ? "9 learning areas" : "12 subjects";
+  const assessmentDetails = {
+    KPSEA: {
+      latestScore: "72.4%",
+      candidates: "48",
+      subjects: ["Mathematics", "English", "Kiswahili", "Science & Technology", "Agriculture", "Creative Arts"],
+      descriptor: "Learner proficiency across the six primary learning areas",
+    },
+    KJSEA: {
+      latestScore: "68.5%",
+      candidates: "41",
+      subjects: ["Mathematics", "English", "Kiswahili", "Integrated Science", "Social Studies", "Creative Arts"],
+      descriptor: "Junior school learning area outcomes for the latest cohort",
+    },
+    KCSE: {
+      latestScore: "7.31",
+      candidates: "36",
+      subjects: ["English", "Kiswahili", "Mathematics", "Biology", "Chemistry", "History & Government"],
+      descriptor: "Mean grade performance across the school's secondary cohort",
+    },
+  }[assessmentKey];
 
   return (
     <section className="panel detail-panel school-performance-panel">
@@ -45,16 +63,27 @@ export default function PerformanceContent({
         <div className="school-performance-period"><CalendarDays /><span>2023 – 2026</span></div>
       </div>
       <div className="school-performance-metrics">
-        <div className="school-performance-metric"><span>Latest mean score</span><strong>{latestScore}</strong><small>2026 assessment</small></div>
+        <div className="school-performance-metric"><span>Latest mean score</span><strong>{assessmentDetails.latestScore}</strong><small>2026 assessment</small></div>
         <div className="school-performance-metric"><span>Assessment</span><strong>{assessmentKey}</strong><small>School-level measure</small></div>
-        <div className="school-performance-metric"><span>Coverage</span><strong>{subjects}</strong><small>Latest reporting cycle</small></div>
+        <div className="school-performance-metric"><span>Candidates</span><strong>{assessmentDetails.candidates}</strong><small>Learners assessed</small></div>
         <div className="school-performance-metric"><span>Trend status</span><strong className="positive">Improving</strong><small>Year-on-year movement</small></div>
       </div>
-      <div className="school-performance-section-heading">
-        <div><span className="school-performance-section-icon"><ChartNoAxesCombined /></span><div><h3>{assessmentKey} performance trend</h3><p>Track this school&apos;s results across the reporting years.</p></div></div>
-        <span className="school-performance-level"><GraduationCap /> {schoolLevel}</span>
+      <div className="school-performance-content-grid">
+        <div className="school-performance-trend-block">
+          <div className="school-performance-section-heading">
+            <div><span className="school-performance-section-icon"><ChartNoAxesCombined /></span><div><h3>{assessmentKey} performance trend</h3><p>Track this school&apos;s results across the reporting years.</p></div></div>
+            <span className="school-performance-level"><GraduationCap /> {schoolLevel}</span>
+          </div>
+          <PerformanceTrends assessmentKey={assessmentKey} />
+        </div>
+        <aside className="school-performance-subjects" aria-label={`${assessmentKey} subjects and candidates`}>
+          <div className="school-performance-subjects-heading"><div><span className="school-performance-section-icon"><GraduationCap /></span><div><h3>Assessment coverage</h3><p>{assessmentDetails.descriptor}</p></div></div></div>
+          <div className="school-performance-candidate-count"><strong>{assessmentDetails.candidates}</strong><span>candidates took {assessmentKey}</span></div>
+          <div className="school-performance-subject-list">
+            {assessmentDetails.subjects.map((subject, index) => <div key={subject}><span>{String(index + 1).padStart(2, "0")}</span><strong>{subject}</strong></div>)}
+          </div>
+        </aside>
       </div>
-      <PerformanceTrends assessmentKey={assessmentKey} />
     </section>
   );
 }
