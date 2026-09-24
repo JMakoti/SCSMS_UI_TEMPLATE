@@ -301,7 +301,6 @@ function ReportPreviewBody({
 function TrendsTab({ school }: { school: string }) {
   const assessment = getSchoolAssessment(school);
   const values = assessment === "KCSE" ? [6.4, 6.7, 7, 7.3] : assessment === "KJSEA" ? [57, 61, 65, 69] : [60, 64, 68, 72];
-  const suffix = assessment === "KCSE" ? "" : "%";
   const chartData = values.map((mean, index) => ({ year: String(2023 + index), mean }));
 
   return (
@@ -323,9 +322,9 @@ function TrendsTab({ school }: { school: string }) {
             <LineChart data={chartData} margin={{ top: 12, right: 18, left: 4, bottom: 8 }}>
             <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 4" />
             <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={10} />
-            <YAxis domain={assessment === "KCSE" ? [6, 8] : [50, 80]} tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `${value}${suffix}`} width={42} />
-            <Tooltip formatter={(value) => [`${value}${suffix}`, "Mean score"]} />
-            <Line dataKey="mean" type="monotone" stroke="var(--primary)" strokeWidth={3} dot={{ r: 5, fill: "var(--primary)" }} activeDot={{ r: 7 }} />
+  <YAxis domain={assessment === "KCSE" ? [6, 8] : [50, 80]} tickLine={false} axisLine={false} tickMargin={8} width={42} />
+  <Tooltip formatter={(value) => [value, "Mean score"]} />
+  <Line dataKey="mean" type="monotone" stroke="var(--chart-2)" strokeWidth={3} dot={{ r: 5, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} activeDot={{ r: 7, fill: "var(--chart-1)" }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
