@@ -24,6 +24,7 @@ import {
   rabaiSchoolYears,
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
+import PerformanceContent from "@/features/pages/performance-page";
 
 function getReportOverviewValues(reportKey: string) {
   const values = {
@@ -387,6 +388,8 @@ export function RecordDetail({
       >
         {active === "Reports" && reportDetail ? (
           <ReportOverviewContent report={reportDetail} />
+        ) : active === "School Performance" ? (
+          <PerformanceContent detail school={item} />
         ) : (
           <section className="panel detail-panel">
             <div className="panel-header">
