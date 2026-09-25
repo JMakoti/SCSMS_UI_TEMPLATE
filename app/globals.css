@@ -6502,6 +6502,47 @@ tbody tr:hover {
   margin-top: 5px;
   color: #7b8da5;
 }
+.enrollment-register-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.enrollment-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+  height: 38px;
+  padding: 0 11px;
+  border: 1px solid #d8e1ec;
+  border-radius: 8px;
+  background: #fff;
+  color: #8090a5;
+}
+.enrollment-search svg {
+  width: 16px;
+  height: 16px;
+}
+.enrollment-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #1e3a5f;
+  font: inherit;
+}
+.enrollment-empty-state {
+  padding: 28px 20px;
+  color: #7b8da5;
+  text-align: center;
+}
+.dark-theme .enrollment-search {
+  border-color: #34445a;
+  background: #182335;
+}
+.dark-theme .enrollment-search input {
+  color: #e6edf7;
+}
 .enrollment-table {
   padding: 0 8px 8px;
 }
