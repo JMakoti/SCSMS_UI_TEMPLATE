@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  Search,
   UserCog,
   Users,
 } from "lucide-react";
@@ -26,14 +27,21 @@ function getInitials(name: string) {
 
 export function StaffContent({ variant = "page" }: StaffContentProps) {
   const records = staffRecords;
+  const [search, setSearch] = useState("");
   const [staffPage, setStaffPage] = useState(1);
   const staffPageSize = 3;
+  const filteredRecords = records.filter((record) =>
+    [record.name, record.role, record.type, record.phone, record.status]
+      .join(" ")
+      .toLowerCase()
+      .includes(search.trim().toLowerCase()),
+  );
   const totalStaffPages = Math.max(
     1,
-    Math.ceil(records.length / staffPageSize),
+    Math.ceil(filteredRecords.length / staffPageSize),
   );
   const currentStaffPage = Math.min(staffPage, totalStaffPages);
-  const paginatedRecords = records.slice(
+  const paginatedRecords = filteredRecords.slice(
     (currentStaffPage - 1) * staffPageSize,
     currentStaffPage * staffPageSize,
   );
@@ -173,6 +181,20 @@ export function StaffContent({ variant = "page" }: StaffContentProps) {
             <Download /> Export
           </button>
         </div>
+        <label className="module-search" htmlFor="staff-record-search">
+          <Search aria-hidden="true" />
+          <span className="sr-only">Search staff records</span>
+          <input
+            id="staff-record-search"
+            type="search"
+            placeholder="Search staff records"
+            value={search}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setStaffPage(1);
+            }}
+          />
+        </label>
         <div className="staff-table">
           <div className="staff-table-head">
             <span>Staff member</span>
