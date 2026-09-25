@@ -7,6 +7,7 @@ import {
   ChevronRight,
   Download,
   School,
+  Search,
   Users,
   X,
 } from "lucide-react";
@@ -154,6 +155,7 @@ export function EnrollmentContent({
   const { currentAcademicYear } = useAcademicYear();
   const [schoolType, setSchoolType] = useState("All schools");
   const [term, setTerm] = useState("Term 1");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
   const bands =
     enrollmentGradeBands[schoolType as keyof typeof enrollmentGradeBands];
@@ -171,9 +173,15 @@ export function EnrollmentContent({
       updated: currentAcademicYear.name,
     };
   });
-  const filteredEnrollmentRows = enrollmentRows.filter(
-    (row) => schoolType === "All schools" || row.type === schoolType,
-  );
+  const filteredEnrollmentRows = enrollmentRows.filter((row) => {
+    const matchesType = schoolType === "All schools" || row.type === schoolType;
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !normalizedQuery ||
+      row.school.toLowerCase().includes(normalizedQuery) ||
+      row.type.toLowerCase().includes(normalizedQuery);
+    return matchesType && matchesSearch;
+  });
   const toggleGrade = (label: string) =>
     setSelectedGrades((current) =>
       current.includes(label)
@@ -244,12 +252,24 @@ export function EnrollmentContent({
               {term} - {currentAcademicYear.name} - {schoolType}
             </p>
           </div>
-          <button
+          <div className="enrollment-register-actions">
+            <label className="enrollment-search">
+              <Search aria-hidden="true" />
+              <span className="sr-only">Search school enrollment register</span>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search schools"
+              />
+            </label>
+            <button
             className="outline-button"
             onClick={() => window.alert("Enrollment export prepared")}
           >
             <Download /> Export
-          </button>
+            </button>
+          </div>
         </div>
         <div className="enrollment-table">
           <div className="enrollment-table-head">
@@ -260,7 +280,12 @@ export function EnrollmentContent({
             <span>Updated</span>
             <span />
           </div>
-          {filteredEnrollmentRows.map((row) => (
+          {filteredEnrollmentRows.length === 0 ? (
+            <p className="enrollment-empty-state">
+              No schools match &quot;{searchQuery}&quot;.
+            </p>
+          ) : (
+            filteredEnrollmentRows.map((row) => (
             <button
               className="enrollment-row"
               key={row.school}
@@ -292,7 +317,8 @@ export function EnrollmentContent({
               <span>{row.updated}</span>
               <ChevronRight />
             </button>
-          ))}
+            ))
+          )}
         </div>
       </section>
     </div>
