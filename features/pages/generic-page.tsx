@@ -39,6 +39,7 @@ export function GenericPage({
 }) {
   const [showStaffModal, setShowStaffModal] = useState(false);
   const [showWardModal, setShowWardModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { currentAcademicYear } = useAcademicYear();
   const icons = {
     BookOpen,
@@ -84,6 +85,15 @@ export function GenericPage({
       : schoolRegistryItems.length
         ? schoolRegistryItems
         : c.items;
+  const normalizedQuery = searchQuery.trim().toLowerCase();
+  const filteredModuleItems = moduleItems.filter((item, index) => {
+    if (!normalizedQuery) return true;
+    const ward = active === "Ward" ? wardSummaries[index] : null;
+    const details = ward
+      ? `${ward.wardCode ?? ""} ${ward.schoolCount} ${ward.studentCount} ${ward.teacherCount}`
+      : `record reference ${String(index + 1).padStart(3, "0")}`;
+    return `${item} ${details}`.toLowerCase().includes(normalizedQuery);
+  });
   return (
     <div className="content">
       <PageHeader
@@ -161,12 +171,28 @@ export function GenericPage({
             <p>Updated today • Local data</p>
           </div>
           <div className="input-wrap compact-search">
-            <Search />
-            <input placeholder="Search records..." />
+            <Search aria-hidden="true" />
+            <label className="sr-only" htmlFor="module-record-search">
+              Search {active} records
+            </label>
+            <input
+              id="module-record-search"
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder={`Search ${active.toLowerCase()} records...`}
+            />
           </div>
         </div>
         <div className="module-rows">
-          {moduleItems.map((item, i) => {
+          {filteredModuleItems.length === 0 ? (
+            <div className="empty-state">
+              <Search aria-hidden="true" />
+              <strong>No {active.toLowerCase()} records found</strong>
+              <span>Try a different search term.</span>
+            </div>
+          ) : filteredModuleItems.map((item) => {
+            const i = moduleItems.indexOf(item);
             const ward = active === "Ward" ? wardSummaries[i] : null;
 
             return (
