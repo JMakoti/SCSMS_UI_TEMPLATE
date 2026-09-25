@@ -309,32 +309,38 @@ function TrendsTab({ school }: { school: string }) {
         <h2>{assessment} Trends</h2>
         <p>Mean score against the year of the exam</p>
       </header>
-  <section className="performance-trend-panel trends-line-panel">
-  <div className="performance-section-title">
-  <div>
-  <h3>Mean score by year</h3>
-  <p>Historical {assessment} examination performance</p>
-  </div>
-  <span className="trend-axis-note">Y-axis: Mean score · X-axis: Exam year</span>
-  </div>
-  <div className="trend-chart-shell">
-  <div className="trend-chart-legend">
-  <span className="trend-legend-dot" aria-hidden="true" />
-  <span>Mean score</span>
-  </div>
-  <div className="h-[300px] w-full px-2 py-5">
-  <ResponsiveContainer width="100%" height="100%">
-  <LineChart data={chartData} margin={{ top: 12, right: 18, left: 4, bottom: 8 }}>
-  <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 4" />
-  <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={10} />
-  <YAxis domain={assessment === "KCSE" ? [6, 8] : [50, 80]} tickLine={false} axisLine={false} tickMargin={8} width={42} />
-  <Tooltip cursor={{ stroke: "var(--chart-3)", strokeDasharray: "4 4" }} formatter={(value) => [value, "Mean score"]} />
-  <Line dataKey="mean" type="monotone" stroke="var(--chart-2)" strokeWidth={3} dot={{ r: 5, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} activeDot={{ r: 7, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} />
-  </LineChart>
-  </ResponsiveContainer>
-  </div>
-  </div>
-  </section>
+      <section className="performance-trend-panel trends-line-panel">
+        <div className="performance-section-title">
+          <div>
+            <h3>Mean score by year</h3>
+            <p>Historical {assessment} examination performance</p>
+          </div>
+          <span className="trend-axis-note">Y-axis: Mean score · X-axis: Exam year</span>
+        </div>
+        <div className="trend-chart-shell">
+          <div className="trend-chart-legend">
+            <span className="trend-legend-dot" aria-hidden="true" />
+            <span>Mean score</span>
+          </div>
+          <div className="h-[300px] w-full px-2 py-5">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 12, right: 18, left: 4, bottom: 8 }}>
+                <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 4" />
+                <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={10} />
+                <YAxis domain={assessment === "KCSE" ? [6, 8] : [50, 80]} tickLine={false} axisLine={false} tickMargin={8} width={42} />
+                <Tooltip
+                  cursor={{
+                    stroke: "var(--chart-3)",
+                    strokeDasharray: "4 4",
+                  }}
+                  formatter={(value) => [value ?? 0, "Mean score"]}
+                />
+                <Line dataKey="mean" type="monotone" stroke="var(--chart-2)" strokeWidth={3} dot={{ r: 5, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} activeDot={{ r: 7, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </section>
     </section>
   );
 }
