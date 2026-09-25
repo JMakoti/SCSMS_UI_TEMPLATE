@@ -37,7 +37,7 @@ export function SearchDialog({
   return (
     <div className="overlay" onClick={onClose}>
       <div className="search-dialog" onClick={(e) => e.stopPropagation()}>
-        <form className="dialog-search">
+        <form className="dialog-search" onSubmit={(event) => event.preventDefault()}>
           <Search />
           <input
             autoFocus
@@ -50,6 +50,7 @@ export function SearchDialog({
           <span>Schools</span>
           {results.map((s) => (
             <button
+              type="button"
               key={s.id}
               onClick={() => {
                 setActive("Schools");
@@ -70,6 +71,7 @@ export function SearchDialog({
         <div className="search-section">
           <span>Quick actions</span>
           <button
+            type="button"
             onClick={() => {
               setActive("Schools");
               onClose();
@@ -83,6 +85,7 @@ export function SearchDialog({
             <kbd>Ctrl N</kbd>
           </button>
           <button
+            type="button"
             onClick={() => {
               setActive("Reports");
               onClose();

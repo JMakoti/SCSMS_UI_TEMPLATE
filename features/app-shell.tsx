@@ -25,6 +25,22 @@ export function AppShell({ children }: { children: ReactNode }) {
     setDark(localStorage.getItem("scsms-theme") === "dark");
   }, []);
 
+  useEffect(() => {
+    const handleKeyboardShortcut = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setDialog("search");
+      }
+
+      if (event.key === "Escape") {
+        setDialog(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyboardShortcut);
+    return () => window.removeEventListener("keydown", handleKeyboardShortcut);
+  }, []);
+
   const toggleTheme = () => {
     setDark((value) => {
       const next = !value;
