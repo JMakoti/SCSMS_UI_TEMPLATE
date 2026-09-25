@@ -24,64 +24,6 @@ import {
   rabaiSchoolYears,
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
-import PerformanceContent from "@/features/pages/performance-page";
-
-function getReportOverviewValues(reportKey: string) {
-  const values = {
-    "school-register": ["128", "98", "28", "24,816"],
-    enrollment: ["24,816", "12,486", "12,330"],
-    staff: ["1,284", "1,028", "256", "642 / 642"],
-    infrastructure: ["2,184", "1,786", "241", "42"],
-    "ward-summary": ["8", "24,816", "1,028", "256"],
-    "school-type": ["98", "22", "6", "2"],
-    "data-quality": ["92%", "128", "119", "111", "124"],
-  };
-
-  return values[reportKey as keyof typeof values] ?? ["128", "98", "28"];
-}
-
-function ReportOverviewContent({
-  report,
-}: {
-  report: ReturnType<typeof getReportDetail>;
-}) {
-  const metricValues = getReportOverviewValues(report.key);
-
-  return (
-    <section className="panel detail-panel report-overview-panel">
-      <div className="panel-header">
-        <div>
-          <h2>{report.title} overview</h2>
-          <p>{report.description}</p>
-        </div>
-        <StatusBadge status={report.status} />
-      </div>
-      <dl className="detail-list report-detail-list">
-        {[
-          ["Report code", report.code],
-          ["Category", report.category],
-          ["Reporting period", report.reportingPeriod],
-          ["Records included", report.recordsIncluded],
-          ["Last generated", report.lastGenerated],
-          ["Output", report.format],
-        ].map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
-      <div className="report-stat-grid report-overview-stat-grid">
-        {report.metrics.slice(0, 3).map((metric, index) => (
-          <div className="report-stat-card" key={metric}>
-            <span>{metric}</span>
-            <strong>{metricValues[index] ?? "0"}</strong>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 export function RecordDetail({
   active,
@@ -95,6 +37,7 @@ export function RecordDetail({
   const [selectedTab, setSelectedTab] = useState("Overview");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { currentAcademicYear } = useAcademicYear();
+  const reportDetail = active === "Reports" ? getReportDetail(item) : null;
   const wardSchools = active === "Ward" ? getRabaiSchoolsByWard(item) : [];
   const wardSchoolIds = new Set(wardSchools.map((school) => school.id));
   const wardYearRows = rabaiSchoolYears.filter(
@@ -117,8 +60,6 @@ export function RecordDetail({
       .toUpperCase()
       .replace(/[^A-Z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
-  const reportDetail = active === "Reports" ? getReportDetail(item) : null;
-
   const Icon =
     active === "Staff"
       ? UserCog
@@ -383,14 +324,10 @@ export function RecordDetail({
         </div>
       </div>
       <DetailTabs active={active} item={item} onTabChange={setSelectedTab} />
-      <div
-        className={`profile-grid ${selectedTab === "Overview" ? "" : "enrollment-overview-hidden"}`}
-      >
-        {active === "Reports" && reportDetail ? (
-          <ReportOverviewContent report={reportDetail} />
-        ) : active === "School Performance" ? (
-          <PerformanceContent detail school={item} />
-        ) : (
+      {active !== "School Performance" && (
+        <div
+          className={`profile-grid ${selectedTab === "Overview" ? "" : "enrollment-overview-hidden"}`}
+        >
           <section className="panel detail-panel">
             <div className="panel-header">
               <div>
@@ -407,8 +344,8 @@ export function RecordDetail({
               ))}
             </dl>
           </section>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

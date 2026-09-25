@@ -1,6 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   AlertTriangle,
   Building2,
@@ -25,6 +34,9 @@ import { useAcademicYear } from "@/features/academic-years/academic-year-context
 import StatusBadge from "@/features/ui/status-badge";
 import SchoolContactsContent from "@/features/pages/contacts-page";
 import InfrastructureContent from "@/features/pages/infrastructure-page";
+import PerformanceContent, {
+  getSchoolAssessment,
+} from "@/features/pages/performance-page";
 import { EnrollmentGradeTable } from "@/features/pages/enrollment-page";
 import {
   getRabaiSchoolsByWard,
@@ -286,6 +298,53 @@ function ReportPreviewBody({
   );
 }
 
+function TrendsTab({ school }: { school: string }) {
+  const assessment = getSchoolAssessment(school);
+  const values = assessment === "KCSE" ? [6.4, 6.7, 7, 7.3] : assessment === "KJSEA" ? [57, 61, 65, 69] : [60, 64, 68, 72];
+  const chartData = values.map((mean, index) => ({ year: String(2023 + index), mean }));
+
+  return (
+    <section className="panel detail-panel performance-overview performance-overview-light">
+      <header className="performance-overview-heading">
+        <h2>{assessment} Trends</h2>
+        <p>Mean score against the year of the exam</p>
+      </header>
+      <section className="performance-trend-panel trends-line-panel">
+        <div className="performance-section-title">
+          <div>
+            <h3>Mean score by year</h3>
+            <p>Historical {assessment} examination performance</p>
+          </div>
+          <span className="trend-axis-note">Y-axis: Mean score · X-axis: Exam year</span>
+        </div>
+        <div className="trend-chart-shell">
+          <div className="trend-chart-legend">
+            <span className="trend-legend-dot" aria-hidden="true" />
+            <span>Mean score</span>
+          </div>
+          <div className="h-[300px] w-full px-2 py-5">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 12, right: 18, left: 4, bottom: 8 }}>
+                <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 4" />
+                <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={10} />
+                <YAxis domain={assessment === "KCSE" ? [6, 8] : [50, 80]} tickLine={false} axisLine={false} tickMargin={8} width={42} />
+                <Tooltip
+                  cursor={{
+                    stroke: "var(--chart-3)",
+                    strokeDasharray: "4 4",
+                  }}
+                  formatter={(value) => [value ?? 0, "Mean score"]}
+                />
+                <Line dataKey="mean" type="monotone" stroke="var(--chart-2)" strokeWidth={3} dot={{ r: 5, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} activeDot={{ r: 7, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </section>
+    </section>
+  );
+}
+
 function ReportInformationTab({ report }: { report: string }) {
   const detail = getReportDetail(report);
   const SelectedIcon = getReportIcon(detail.key);
@@ -365,6 +424,12 @@ export function DetailTabs({
 }) {
   const [tab, setTab] = useState("Overview");
   const [term, setTerm] = useState("Term 1");
+  const assessmentTab = getSchoolAssessment(item);
+  useEffect(() => {
+    if (active === "School Performance" && !["Overview", assessmentTab, "Trends"].includes(tab)) {
+      setTab("Overview");
+    }
+  }, [active, assessmentTab, tab]);
   const tabs =
     active === "Enrollment"
       ? ["Overview", "Enrollment"]
@@ -378,8 +443,9 @@ export function DetailTabs({
               ? ["Overview", "Schools"]
               : active === "Reports"
                 ? ["Overview", "Report information"]
-                : ["Overview"];
-
+                : active === "School Performance"
+                  ? ["Overview", assessmentTab, "Trends"]
+                  : ["Overview"];
 
   const selectTab = (nextTab: string) => {
     setTab(nextTab);
@@ -399,6 +465,14 @@ export function DetailTabs({
           </button>
         ))}
       </div>
+      {active === "School Performance" && tab === "Trends" && (
+        <TrendsTab school={item} />
+      )}
+      {active === "School Performance" &&
+        (tab === "Overview" || tab === assessmentTab) && (
+          <PerformanceContent detail school={item} overview={tab === "Overview"} />
+        )}
+
       {tab === "Schools" && active === "Ward" && <WardSchoolsTab ward={item} />}
       {tab === "Report information" && active === "Reports" && (
         <ReportInformationTab report={item} />
