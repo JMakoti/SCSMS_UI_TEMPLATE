@@ -122,6 +122,16 @@ export function SchoolProfile({
     school.latitude !== null && school.longitude !== null
       ? `${school.latitude}, ${school.longitude}`
       : "Not provided";
+  const openSchoolEdit = () =>
+    window.dispatchEvent(
+      new CustomEvent("scsms-edit-record", {
+        detail: {
+          active: "Schools",
+          item: school.displayName,
+        },
+      }),
+    );
+
   return (
     <div className={`content ${tab === "Staff" ? "school-profile-staff" : ""}`}>
       {showDeleteModal && (
@@ -160,16 +170,7 @@ export function SchoolProfile({
           </button>
           <Button
             className="edit-school-button"
-            onClick={() =>
-              window.dispatchEvent(
-                new CustomEvent("scsms-edit-record", {
-                  detail: {
-                    active: "Schools",
-                    item: school.displayName,
-                  },
-                }),
-              )
-            }
+            onClick={openSchoolEdit}
           >
             <Pencil data-icon="inline-start" />
             Edit School
@@ -186,10 +187,10 @@ export function SchoolProfile({
       <div className="profile-tabs">
         {[
           "Overview",
-          "Contacts",
           "Enrollment",
           "Staff",
           "Infrastructure",
+          "Contacts",
           "History",
         ].map((x) => (
           <button
@@ -240,7 +241,7 @@ export function SchoolProfile({
                 <h2>School information</h2>
                 <p>Official registry details</p>
               </div>
-              <button className="icon-button">
+              <button className="icon-button" onClick={openSchoolEdit}>
                 <Pencil />
               </button>
             </div>
@@ -296,7 +297,7 @@ export function SchoolProfile({
                 <h2>Location</h2>
                 <p>Administrative location details</p>
               </div>
-              <button className="icon-button">
+              <button className="icon-button" onClick={openSchoolEdit}>
                 <Pencil />
               </button>
             </div>

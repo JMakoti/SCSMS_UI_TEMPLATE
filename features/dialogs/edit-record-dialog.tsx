@@ -16,6 +16,7 @@ import {
   rabaiSchools,
   rabaiWards,
 } from "@/seeders/rabai-schools";
+import { staffRecords } from "@/seeders/staff";
 import { Check, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 
@@ -45,6 +46,14 @@ export function EditRecordDialog({
             school.schoolCode === item,
         ) ?? rabaiSchools[0])
       : null;
+  const staffInfo =
+    active === "Staff"
+      ? staffRecords.find((record) => record.name === item)
+      : null;
+  const staffIndex =
+    active === "Staff"
+      ? staffRecords.findIndex((record) => record.name === item)
+      : -1;
   const fields: EditField[] =
     active === "Schools"
       ? [
@@ -76,6 +85,11 @@ export function EditRecordDialog({
             "Designation",
             "Assigned school",
             "Employment type",
+            "Employer",
+            "TSC No.",
+            "Email address",
+            "Phone number",
+            "Date joined",
           ].map((label) => ({ label, name: label }))
         : active === "Enrollment"
           ? [
@@ -156,6 +170,31 @@ export function EditRecordDialog({
       };
 
       return values[field.name] ?? "";
+    }
+
+    if (active === "Staff") {
+      const staffEmail = staffInfo
+        ? `${staffInfo.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ".")
+            .replace(/^\.+|\.+$/g, "")}@school.example`
+        : "";
+      const values: Record<string, string> = {
+        "Full name": staffInfo?.name ?? item,
+        Designation: staffInfo?.role ?? "Teacher",
+        "Assigned school": "Mwangaza Primary School",
+        "Employment type": "Permanent",
+        Employer: "Goverment_Tsc",
+        "TSC No.":
+          staffIndex >= 0
+            ? `TSC-${String(staffIndex + 12).padStart(4, "0")}`
+            : "",
+        "Email address": staffEmail,
+        "Phone number": staffInfo?.phone ?? "",
+        "Date joined": "2023-01-15",
+      };
+
+      return values[field.label] ?? "";
     }
 
     return field.label === "School" || field.label === "Assigned school"
@@ -298,6 +337,7 @@ export function EditRecordDialog({
                       </select>
                     ) : field.label === "Term" ||
                       field.label === "Employment type" ||
+                      field.label === "Employer" ||
                       field.label === "Status" ? (
                       <select {...register(`fields.${field.name}`)}>
                         {field.label === "Term" ? (
@@ -311,6 +351,24 @@ export function EditRecordDialog({
                             <option>Permanent</option>
                             <option>Contract</option>
                             <option>Temporary</option>
+                          </>
+                        ) : field.label === "Employer" ? (
+                          <>
+                            <option value="Goverment_Tsc">
+                              Government (TSC)
+                            </option>
+                            <option value="County_Goverment">
+                              County Government
+                            </option>
+                            <option value="School_Board_Bom">
+                              School Board (BOM)
+                            </option>
+                            <option value="PRIVATE_OWNER">Private Owner</option>
+                            <option value="FAITH_BASED">
+                              Faith Based Organization
+                            </option>
+                            <option value="NGO">NGO</option>
+                            <option value="AGENCY">Agency</option>
                           </>
                         ) : active === "Ward" ? (
                           <>

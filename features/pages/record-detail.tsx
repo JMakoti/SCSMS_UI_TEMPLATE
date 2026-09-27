@@ -24,6 +24,7 @@ import {
   rabaiSchoolYears,
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
+import { staffRecords } from "@/seeders/staff";
 
 export function RecordDetail({
   active,
@@ -38,6 +39,28 @@ export function RecordDetail({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const { currentAcademicYear } = useAcademicYear();
   const reportDetail = active === "Reports" ? getReportDetail(item) : null;
+  const staffDetail =
+    active === "Staff"
+      ? staffRecords.find((record) => record.name === item)
+      : null;
+  const staffIndex =
+    active === "Staff"
+      ? staffRecords.findIndex((record) => record.name === item)
+      : -1;
+  const staffId =
+    staffIndex >= 0
+      ? `STF-${String(staffIndex + 12).padStart(3, "0")}`
+      : "STF-012";
+  const staffTscNo =
+    staffIndex >= 0
+      ? `TSC-${String(staffIndex + 12).padStart(4, "0")}`
+      : "Not provided";
+  const staffEmail = staffDetail
+    ? `${staffDetail.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ".")
+        .replace(/^\.+|\.+$/g, "")}@school.example`
+    : "staff@school.example";
   const wardSchools = active === "Ward" ? getRabaiSchoolsByWard(item) : [];
   const wardSchoolIds = new Set(wardSchools.map((school) => school.id));
   const wardYearRows = rabaiSchoolYears.filter(
@@ -68,21 +91,26 @@ export function RecordDetail({
         : active === "Infrastructure"
           ? Building2
           : active === "School Performance"
-             ? Gauge
-             : active === "Reports"
-                ? FileBarChart2
-                : active === "Ward"
-                  ? MapPinned
-                  : BookOpen;
+            ? Gauge
+            : active === "Reports"
+              ? FileBarChart2
+              : active === "Ward"
+                ? MapPinned
+                : BookOpen;
 
   const fields =
     active === "Staff"
       ? [
-          ["Staff ID", "STF-012"],
-          ["Full name", item],
-          ["Designation", "Teacher"],
-          ["Employment type", "Permanent"],
+          ["Staff ID", staffId],
+          ["Full name", staffDetail?.name ?? item],
+          ["Designation", staffDetail?.role ?? "Teacher"],
           ["Assigned school", "Mwangaza Primary School"],
+          ["Employment type", "Permanent"],
+          ["Employer", "Government (TSC)"],
+          ["TSC No.", staffTscNo],
+          ["Email address", staffEmail],
+          ["Phone number", staffDetail?.phone ?? "+254 700 000 000"],
+          ["Date joined", "15 January 2023"],
           ["Status", "Active"],
         ]
       : active === "Enrollment"
@@ -162,91 +190,93 @@ export function RecordDetail({
                 ["Email", "contact@school.example"],
                 ["Status", "Active"],
               ]
-          : active === "School Performance"
-            ? [
-                ["School", item],
-                ["Level", "Primary"],
-                ["KNEC Code", "04122123"],
-                ["Exam Canditature", "50"],
-                ["Mean Score", "9.30"],
-                ["Subjects", "12"],
-                ["Year", "2026"],
-              ]
-            : active === "Ward"
+            : active === "School Performance"
               ? [
-                  ["Ward", item],
-                  ["Ward code", wardCode],
-                  ["County", wardInfo?.county ?? "Kilifi"],
-                  ["County code", wardInfo?.countyCode ?? "003"],
-                  ["Sub-County", wardInfo?.subCounty ?? "Rabai"],
-                  ["Sub-County code", wardInfo?.subCountyCode ?? "014"],
-                  ["Constituency", wardInfo?.constituency ?? "Rabai"],
-                  ["Constituency code", wardInfo?.constituencyCode ?? "014"],
-                  ["Academic year", currentAcademicYear.name],
-                  ["Status", "Active"],
-                  ["Schools", wardSchools.length.toLocaleString()],
-                  ["Learners", wardLearners.toLocaleString()],
-                  ["Staff", wardStaff.toLocaleString()],
-                  [
-                    "Public schools",
-                    wardSchools
-                      .filter((school) => school.ownershipType === "PUBLIC")
-                      .length.toLocaleString(),
-                  ],
-                  [
-                    "Private schools",
-                    wardSchools
-                      .filter((school) => school.ownershipType === "PRIVATE")
-                      .length.toLocaleString(),
-                  ],
-                  [
-                    "Primary schools",
-                    wardSchools
-                      .filter((school) => school.institutionType === "PRIMARY")
-                      .length.toLocaleString(),
-                  ],
-                  [
-                    "Junior secondary schools",
-                    wardSchools
-                      .filter(
-                        (school) =>
-                          school.institutionType === "JUNIOR_SECONDARY",
-                      )
-                      .length.toLocaleString(),
-                  ],
-                  [
-                    "Senior schools",
-                    wardSchools
-                      .filter(
-                        (school) =>
-                          school.institutionType === "SENIOR_SECONDARY",
-                      )
-                      .length.toLocaleString(),
-                  ],
-                  ["Notes", "Ward-level Rabai school coverage record"],
+                  ["School", item],
+                  ["Level", "Primary"],
+                  ["KNEC Code", "04122123"],
+                  ["Exam Canditature", "50"],
+                  ["Mean Score", "9.30"],
+                  ["Subjects", "12"],
+                  ["Year", "2026"],
                 ]
-              : [
-                  ["Report code", reportDetail?.code ?? "RPT-000"],
-                  ["Report type", reportDetail?.title ?? item],
-                  ["Category", reportDetail?.category ?? "Operational"],
-                  [
-                    "Reporting period",
-                    reportDetail?.reportingPeriod ?? "Academic Year 2026",
-                  ],
-                  [
-                    "Records included",
-                    reportDetail?.recordsIncluded ?? "128 schools",
-                  ],
-                  [
-                    "Last generated",
-                    reportDetail?.lastGenerated ?? "18 September 2026",
-                  ],
-                  [
-                    "Owner",
-                    reportDetail?.owner ?? "Sub-County Education Office",
-                  ],
-                  ["Status", reportDetail?.status ?? "Ready for export"],
-                ];
+              : active === "Ward"
+                ? [
+                    ["Ward", item],
+                    ["Ward code", wardCode],
+                    ["County", wardInfo?.county ?? "Kilifi"],
+                    ["County code", wardInfo?.countyCode ?? "003"],
+                    ["Sub-County", wardInfo?.subCounty ?? "Rabai"],
+                    ["Sub-County code", wardInfo?.subCountyCode ?? "014"],
+                    ["Constituency", wardInfo?.constituency ?? "Rabai"],
+                    ["Constituency code", wardInfo?.constituencyCode ?? "014"],
+                    ["Academic year", currentAcademicYear.name],
+                    ["Status", "Active"],
+                    ["Schools", wardSchools.length.toLocaleString()],
+                    ["Learners", wardLearners.toLocaleString()],
+                    ["Staff", wardStaff.toLocaleString()],
+                    [
+                      "Public schools",
+                      wardSchools
+                        .filter((school) => school.ownershipType === "PUBLIC")
+                        .length.toLocaleString(),
+                    ],
+                    [
+                      "Private schools",
+                      wardSchools
+                        .filter((school) => school.ownershipType === "PRIVATE")
+                        .length.toLocaleString(),
+                    ],
+                    [
+                      "Primary schools",
+                      wardSchools
+                        .filter(
+                          (school) => school.institutionType === "PRIMARY",
+                        )
+                        .length.toLocaleString(),
+                    ],
+                    [
+                      "Junior secondary schools",
+                      wardSchools
+                        .filter(
+                          (school) =>
+                            school.institutionType === "JUNIOR_SECONDARY",
+                        )
+                        .length.toLocaleString(),
+                    ],
+                    [
+                      "Senior schools",
+                      wardSchools
+                        .filter(
+                          (school) =>
+                            school.institutionType === "SENIOR_SECONDARY",
+                        )
+                        .length.toLocaleString(),
+                    ],
+                    ["Notes", "Ward-level Rabai school coverage record"],
+                  ]
+                : [
+                    ["Report code", reportDetail?.code ?? "RPT-000"],
+                    ["Report type", reportDetail?.title ?? item],
+                    ["Category", reportDetail?.category ?? "Operational"],
+                    [
+                      "Reporting period",
+                      reportDetail?.reportingPeriod ?? "Academic Year 2026",
+                    ],
+                    [
+                      "Records included",
+                      reportDetail?.recordsIncluded ?? "128 schools",
+                    ],
+                    [
+                      "Last generated",
+                      reportDetail?.lastGenerated ?? "18 September 2026",
+                    ],
+                    [
+                      "Owner",
+                      reportDetail?.owner ?? "Sub-County Education Office",
+                    ],
+                    ["Status", reportDetail?.status ?? "Ready for export"],
+                  ];
 
   return (
     <div className="content">

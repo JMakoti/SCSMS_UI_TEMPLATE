@@ -7,10 +7,16 @@ import Sidebar from "@/features/navigation/sidebar";
 import Topbar from "@/features/navigation/topbar";
 import { SearchDialog } from "@/features/dialogs/search-dialog";
 import { AddSchoolDialog } from "@/features/dialogs/school-dialogs";
+import { EditRecordDialog } from "@/features/dialogs/edit-record-dialog";
 import { LoginPage } from "@/features/auth/login-page";
 import { globalStyles } from "@/features/app-styles";
 import { AcademicYearProvider } from "@/features/academic-years/academic-year-context";
 import { routeForModule } from "@/features/navigation/route-for-module";
+
+type EditDialogState = {
+  active: string;
+  item: string;
+};
 
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -19,6 +25,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   );
   const [collapsed, setCollapsed] = useState(false);
   const [dialog, setDialog] = useState<string | null>(null);
+  const [editDialog, setEditDialog] = useState<EditDialogState | null>(null);
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -39,6 +46,23 @@ export function AppShell({ children }: { children: ReactNode }) {
 
     window.addEventListener("keydown", handleKeyboardShortcut);
     return () => window.removeEventListener("keydown", handleKeyboardShortcut);
+  }, []);
+
+  useEffect(() => {
+    const handleEditRecord = (event: Event) => {
+      const detail = (event as CustomEvent<EditDialogState>).detail;
+
+      if (!detail?.active || !detail?.item) return;
+
+      setEditDialog({
+        active: detail.active,
+        item: detail.item,
+      });
+    };
+
+    window.addEventListener("scsms-edit-record", handleEditRecord);
+    return () =>
+      window.removeEventListener("scsms-edit-record", handleEditRecord);
   }, []);
 
   const toggleTheme = () => {
@@ -90,6 +114,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         )}
         {dialog === "add" && (
           <AddSchoolDialog onClose={() => setDialog(null)} />
+        )}
+        {editDialog && (
+          <EditRecordDialog
+            active={editDialog.active}
+            item={editDialog.item}
+            onClose={() => setEditDialog(null)}
+          />
         )}
         <style jsx global>
           {globalStyles}
