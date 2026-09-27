@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { rabaiSchools } from "@/seeders/rabai-schools";
 import {
-  ArrowUpToLine,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -229,9 +228,6 @@ function SchoolsPage({
           </div>
         </div>
         <div className="toolbar-right">
-          <button className="outline-button" type="button">
-            <UploadIcon /> Import
-          </button>
           <div className="filter-menu-wrap">
             <button
               className={`outline-button ${exportOpen ? "active-tool" : ""}`}
@@ -513,9 +509,6 @@ function SchoolsPage({
       </div>
     </div>
   );
-}
-export function UploadIcon() {
-  return <ArrowUpToLine />;
 }
 
 export default SchoolsPage;
