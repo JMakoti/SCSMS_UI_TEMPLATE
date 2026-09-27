@@ -15,8 +15,6 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
-  ClipboardCheck,
-  Database,
   FileBarChart2,
   FileSpreadsheet,
   FileText,
@@ -25,7 +23,6 @@ import {
   Printer,
   RefreshCw,
   Search,
-  ShieldCheck,
   School,
   Users,
 } from "lucide-react";
@@ -39,9 +36,14 @@ import PerformanceContent, {
 import { EnrollmentGradeTable } from "@/features/pages/enrollment-page";
 import {
   getRabaiSchoolsByWard,
+  rabaiSchools,
   rabaiSchoolYears,
+  rabaiWards,
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
+import { staffRecords } from "@/seeders/staff";
+import { infrastructureFacilityRows } from "@/seeders/infrastructure";
+import { academicYears } from "@/seeders/academic-years";
 import { ExportMenu } from "@/features/ui/export-menu";
 
 function WardSchoolsTab({ ward }: { ward: string }) {
@@ -143,63 +145,314 @@ function getReportIcon(reportKey: string) {
   return icons[reportKey as keyof typeof icons] ?? FileText;
 }
 
-function getReportPreviewRows(reportKey: string) {
-  const rows = {
-    "school-register": [
-      ["SCH-0001", "Mwangaza Primary School", "Primary", "Public", "Mvita"],
-      ["SCH-0002", "Bahari Academy", "Primary", "Private", "Kisauni"],
-      ["SCH-0003", "Kijani Secondary School", "Secondary", "Public", "Nyali"],
+function formatSchoolValue(value: string | null | undefined) {
+  return value
+    ? value
+        .toLowerCase()
+        .split("_")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ")
+    : "Not provided";
+}
+
+function getSchoolYear(schoolId: string, academicYearId = "ay-2026") {
+  return (
+    rabaiSchoolYears.find(
+      (record) =>
+        record.schoolId === schoolId &&
+        record.academicYearId === academicYearId,
+    ) ??
+    rabaiSchoolYears.find((record) => record.schoolId === schoolId) ??
+    null
+  );
+}
+
+function getReportDataset(
+  reportKey: string,
+  {
+    academicYearId = "ay-2026",
+    ward = "All Wards",
+  }: { academicYearId?: string; ward?: string } = {},
+) {
+  const allSchools = [...rabaiSchools].sort((a, b) =>
+    a.displayName.localeCompare(b.displayName),
+  );
+  const sortedSchools = allSchools
+    .filter((school) => ward === "All Wards" || school.ward === ward)
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
+  const schoolRows = sortedSchools.map((school, index) => {
+    const year = getSchoolYear(school.id, academicYearId);
+    return [
+      school.schoolCode ?? `SCH-${String(index + 1).padStart(4, "0")}`,
+      school.displayName,
+      formatSchoolValue(school.institutionType),
+      formatSchoolValue(school.ownershipType),
+      school.ward ?? "Not mapped",
+      String(year?.studentCount ?? 0),
+      String(year?.teacherCount ?? 0),
+      school.isActive ? "Active" : "Inactive",
+    ];
+  });
+
+  if (reportKey === "enrollment") {
+    const rows = sortedSchools.map((school) => {
+      const year = getSchoolYear(school.id, academicYearId);
+      const total = year?.studentCount ?? 0;
+      const boys = Math.round(total * 0.51);
+      const girls = total - boys;
+      return [
+        school.displayName,
+        formatSchoolValue(school.institutionType),
+        school.ward ?? "Not mapped",
+        String(boys),
+        String(girls),
+        String(total),
+        year?.status === "CLOSED" ? "Closed year" : "Active year",
+      ];
+    });
+    return {
+      headers: [
+        "School",
+        "Level",
+        "Ward",
+        "Boys",
+        "Girls",
+        "Total Learners",
+        "Year Status",
+      ],
+      rows,
+      metricValues: [
+        rows.length.toLocaleString(),
+        rows.reduce((sum, row) => sum + Number(row[3]), 0).toLocaleString(),
+        rows.reduce((sum, row) => sum + Number(row[4]), 0).toLocaleString(),
+        rows.reduce((sum, row) => sum + Number(row[5]), 0).toLocaleString(),
+      ],
+    };
+  }
+
+  if (reportKey === "staff") {
+    const rows = staffRecords
+      .map((staff, index) => {
+        const school = allSchools.length
+          ? allSchools[index % allSchools.length]
+          : null;
+        return [
+          `STF-${String(index + 12).padStart(3, "0")}`,
+          staff.name,
+          school?.displayName ?? "Not assigned",
+          school?.ward ?? "Not mapped",
+          staff.role,
+          staff.type,
+          index % 3 === 0 ? "Permanent" : "Contract",
+          staff.status,
+        ];
+      })
+      .filter((row) => ward === "All Wards" || row[3] === ward);
+    return {
+      headers: [
+        "Staff ID",
+        "Name",
+        "School",
+        "Ward",
+        "Designation",
+        "Staff Type",
+        "Employment Type",
+        "Status",
+      ],
+      rows,
+      metricValues: [
+        rows.length.toLocaleString(),
+        rows.filter((row) => row[5] === "Teaching").length.toLocaleString(),
+        rows.filter((row) => row[5] === "Non-teaching").length.toLocaleString(),
+        new Set(rows.map((row) => row[2])).size.toLocaleString(),
+      ],
+    };
+  }
+
+  if (reportKey === "infrastructure") {
+    return {
+      headers: ["Facility", "Available", "Good", "Needs Repair", "Status"],
+      rows: infrastructureFacilityRows.map((row) => [
+        row.facility,
+        row.available,
+        row.good,
+        row.needsRepair,
+        row.status,
+      ]),
+      metricValues: [
+        infrastructureFacilityRows
+          .reduce((sum, row) => sum + Number(row.available), 0)
+          .toLocaleString(),
+        infrastructureFacilityRows
+          .reduce((sum, row) => sum + Number(row.good), 0)
+          .toLocaleString(),
+        infrastructureFacilityRows
+          .reduce((sum, row) => sum + Number(row.needsRepair), 0)
+          .toLocaleString(),
+        infrastructureFacilityRows
+          .filter((row) => row.status === "Completed")
+          .length.toLocaleString(),
+      ],
+    };
+  }
+
+  if (reportKey === "ward-summary") {
+    const wards = Array.from(
+      new Set(sortedSchools.map((school) => school.ward)),
+    );
+    const rows = wards.map((ward) => {
+      const wardSchools = sortedSchools.filter(
+        (school) => school.ward === ward,
+      );
+      const yearRows = wardSchools
+        .map((school) => getSchoolYear(school.id, academicYearId))
+        .filter(Boolean);
+      const students = yearRows.reduce(
+        (sum, row) => sum + (row?.studentCount ?? 0),
+        0,
+      );
+      const teaching = yearRows.reduce(
+        (sum, row) => sum + (row?.teacherCount ?? 0),
+        0,
+      );
+      return [
+        ward ?? "Not mapped",
+        String(wardSchools.length),
+        students.toLocaleString(),
+        teaching.toLocaleString(),
+        Math.round(teaching * 0.22).toLocaleString(),
+      ];
+    });
+    return {
+      headers: ["Ward", "Schools", "Students", "Teaching", "Non-Teaching"],
+      rows,
+      metricValues: [
+        rows.length.toLocaleString(),
+        sortedSchools.length.toLocaleString(),
+        rows
+          .reduce((sum, row) => sum + Number(row[2].replace(/,/g, "")), 0)
+          .toLocaleString(),
+        rows
+          .reduce((sum, row) => sum + Number(row[3].replace(/,/g, "")), 0)
+          .toLocaleString(),
+      ],
+    };
+  }
+
+  if (reportKey === "school-type") {
+    const types = Array.from(
+      new Set(sortedSchools.map((school) => school.institutionType)),
+    );
+    const rows = types.map((type) => {
+      const count = sortedSchools.filter(
+        (school) => school.institutionType === type,
+      ).length;
+      return [
+        formatSchoolValue(type),
+        String(count),
+        `${
+          sortedSchools.length
+            ? Math.round((count / sortedSchools.length) * 100)
+            : 0
+        }%`,
+      ];
+    });
+    return {
+      headers: ["School Type", "Schools", "Share"],
+      rows,
+      metricValues: rows.map((row) => row[1]).slice(0, 4),
+    };
+  }
+
+  if (reportKey === "data-quality") {
+    const checks = [
+      ["Has school code", sortedSchools.filter((school) => school.schoolCode)],
+      ["Has phone number", sortedSchools.filter((school) => school.phone)],
+      ["Has email address", sortedSchools.filter((school) => school.email)],
+      [
+        "Has ward mapping",
+        sortedSchools.filter((school) => school.ward && school.ward !== ""),
+      ],
+    ] as const;
+    const rows = checks.map(([label, passed]) => [
+      label,
+      String(passed.length),
+      String(sortedSchools.length),
+      `${
+        sortedSchools.length
+          ? Math.round((passed.length / sortedSchools.length) * 100)
+          : 0
+      }%`,
+    ]);
+    return {
+      headers: ["Check", "Passed", "Total", "Completion"],
+      rows,
+      metricValues: rows.map((row) => row[3]).slice(0, 4),
+    };
+  }
+
+  return {
+    headers: [
+      "Code",
+      "Name",
+      "Level",
+      "Ownership",
+      "Ward",
+      "Students",
+      "Staff",
+      "Status",
     ],
-    enrollment: [
-      ["Grade 1", "326", "316", "642"],
-      ["Grade 2", "301", "294", "595"],
-      ["Grade 3", "288", "279", "567"],
-    ],
-    staff: [
-      ["STF-00012", "John Kamau", "Head Teacher", "Permanent", "Active"],
-      ["STF-00017", "Grace Akinyi", "Teacher", "Permanent", "Active"],
-      ["STF-00021", "Peter Otieno", "Clerk", "Contract", "Active"],
-    ],
-    infrastructure: [
-      ["Mwangaza Primary", "18", "14", "3", "Yes"],
-      ["Bahari Academy", "15", "11", "2", "No"],
-      ["Kijani Secondary", "24", "20", "2", "Yes"],
-    ],
-    "ward-summary": [
-      ["Mvita", "18", "8,420", "284", "68"],
-      ["Kisauni", "22", "10,315", "342", "91"],
-      ["Nyali", "15", "7,108", "219", "52"],
-    ],
-    "school-type": [
-      ["Public", "98", "76%"],
-      ["Private", "22", "17%"],
-      ["Faith-Based", "6", "5%"],
-      ["Community", "2", "2%"],
-    ],
-    "data-quality": [
-      ["Has school code", "128", "128", "100%"],
-      ["Has phone number", "119", "128", "93%"],
-      ["Has email address", "111", "128", "87%"],
+    rows: schoolRows,
+    metricValues: [
+      sortedSchools.length.toLocaleString(),
+      sortedSchools
+        .filter((school) => school.institutionType === "PRIMARY")
+        .length.toLocaleString(),
+      sortedSchools
+        .filter((school) => school.institutionType !== "PRIMARY")
+        .length.toLocaleString(),
+      schoolRows.reduce((sum, row) => sum + Number(row[5]), 0).toLocaleString(),
     ],
   };
-
-  return rows[reportKey as keyof typeof rows] ?? rows["school-register"];
 }
 
 function ReportPreviewBody({
   report,
+  dataset,
+  selectedWard,
 }: {
   report: ReturnType<typeof getReportDetail>;
+  dataset: ReturnType<typeof getReportDataset>;
+  selectedWard: string;
 }) {
-  const rows = getReportPreviewRows(report.key);
+  const rows = dataset.rows;
   const [page, setPage] = useState(1);
-  const pageSize = 2;
+  const pageSize = 20;
   const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const visibleRows = rows.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize,
   );
+  const wardDistribution = Array.from(
+    rows.reduce((map, row) => {
+      const ward = String(row[4] ?? "Not mapped");
+      map.set(ward, (map.get(ward) ?? 0) + 1);
+      return map;
+    }, new Map<string, number>()),
+  );
+  const maxWardCount = Math.max(
+    1,
+    ...wardDistribution.map(([, count]) => count),
+  );
+  const visualTitle =
+    report.key === "school-register"
+      ? "Schools by ward"
+      : report.visualizations[0];
+
+  useEffect(() => {
+    setPage(1);
+  }, [report.key, rows.length, selectedWard]);
 
   return (
     <div className="report-preview-body">
@@ -207,18 +460,28 @@ function ReportPreviewBody({
         {report.metrics.slice(0, 4).map((metric, index) => (
           <div className="report-stat-card" key={metric}>
             <span>{metric}</span>
-            <strong>
-              {["128", "98", "28", "24,816"][index] ?? String(100 - index * 7)}
-            </strong>
+            <strong>{dataset.metricValues[index] ?? "0"}</strong>
+            <small>
+              {index === 0 ? "Filtered records" : "Current selection"}
+            </small>
           </div>
         ))}
       </div>
       <div className="report-preview-content">
         <div className="report-preview-table-wrap">
+          <div className="report-table-headline">
+            <div>
+              <h3>Report rows</h3>
+              <p>
+                {rows.length.toLocaleString()} records match the active filters
+              </p>
+            </div>
+            <span>{pageSize} per page</span>
+          </div>
           <table className="report-preview-table">
             <thead>
               <tr>
-                {report.previewColumns.slice(0, 5).map((column) => (
+                {dataset.headers.slice(0, 5).map((column) => (
                   <th key={column}>{column}</th>
                 ))}
               </tr>
@@ -271,8 +534,24 @@ function ReportPreviewBody({
           </div>
         </div>
         <div className="report-visual-card">
-          <h3>{report.visualizations[0]}</h3>
-          {report.key === "data-quality" ? (
+          <h3>{visualTitle}</h3>
+          {report.key === "school-register" ? (
+            <div className="report-ward-chart">
+              {wardDistribution.map(([ward, count]) => (
+                <span key={ward}>
+                  <b>{ward}</b>
+                  <i>
+                    <em
+                      style={{
+                        width: `${Math.max(8, (count / maxWardCount) * 100)}%`,
+                      }}
+                    />
+                  </i>
+                  <strong>{count}</strong>
+                </span>
+              ))}
+            </div>
+          ) : report.key === "data-quality" ? (
             <div className="report-progress-ring">
               <strong>92%</strong>
               <span>Overall Quality</span>
@@ -423,72 +702,98 @@ function TrendsTab({ school }: { school: string }) {
 }
 
 function ReportInformationTab({ report }: { report: string }) {
+  const { currentAcademicYear } = useAcademicYear();
   const detail = getReportDetail(report);
   const SelectedIcon = getReportIcon(detail.key);
+  const [selectedAcademicYearId, setSelectedAcademicYearId] = useState(
+    currentAcademicYear.id,
+  );
+  const [selectedWard, setSelectedWard] = useState("All Wards");
+  const dataset = getReportDataset(detail.key, {
+    academicYearId: selectedAcademicYearId,
+    ward: selectedWard,
+  });
+  const selectedAcademicYear =
+    academicYears.find((year) => year.id === selectedAcademicYearId) ??
+    currentAcademicYear;
 
   return (
     <section className="report-workspace single-report-workspace">
       <div className="report-workspace-main">
-        <div className="report-toolbar-card">
-          <div className="report-toolbar-title">
+        <div className="report-info-panel">
+          <div className="report-info-hero">
             <span className="report-toolbar-icon">
               <SelectedIcon />
             </span>
-            <div>
+            <div className="report-toolbar-title">
+              <span className="eyebrow">Report information</span>
               <h2>{detail.title}</h2>
               <p>{detail.description}</p>
             </div>
+            <div className="report-info-status">
+              <span>{detail.status}</span>
+              <strong>{dataset.rows.length.toLocaleString()} rows</strong>
+            </div>
           </div>
-          <div className="report-toolbar-actions">
-            {(detail.key === "enrollment" || detail.key === "ward-summary") && (
-              <select aria-label="Academic year">
-                <option>2025</option>
-                <option>2024</option>
-              </select>
-            )}
-            {detail.filters.includes("Ward") && (
-              <select aria-label="Ward filter">
-                <option>All Wards</option>
-                <option>Mvita</option>
-                <option>Kisauni</option>
-                <option>Nyali</option>
-              </select>
-            )}
-            <button>
-              <RefreshCw /> Refresh
-            </button>
-            <ExportMenu
-              title={detail.title}
-              filename={`${detail.key}-report`}
-              headers={detail.previewColumns.slice(0, 5)}
-              rows={getReportPreviewRows(detail.key).map((row) =>
-                row.slice(0, 5),
+          <div className="report-toolbar-card">
+            <div className="report-toolbar-title">
+              <h3>Report controls</h3>
+              <p>
+                {selectedWard} / {selectedAcademicYear.name}
+              </p>
+            </div>
+            <div className="report-toolbar-actions">
+              {(detail.key === "enrollment" ||
+                detail.key === "ward-summary") && (
+                <select
+                  aria-label="Academic year"
+                  value={selectedAcademicYearId}
+                  onChange={(event) =>
+                    setSelectedAcademicYearId(event.target.value)
+                  }
+                >
+                  {academicYears.map((year) => (
+                    <option key={year.id} value={year.id}>
+                      {year.name}
+                    </option>
+                  ))}
+                </select>
               )}
+              {detail.filters.includes("Ward") && (
+                <select
+                  aria-label="Ward filter"
+                  value={selectedWard}
+                  onChange={(event) => setSelectedWard(event.target.value)}
+                >
+                  <option value="All Wards">All Wards</option>
+                  {rabaiWards.map((ward) => (
+                    <option key={ward.wardCode} value={ward.wardName}>
+                      {ward.wardName}
+                    </option>
+                  ))}
+                </select>
+              )}
+              <button>
+                <RefreshCw /> Refresh
+              </button>
+              <ExportMenu
+                title={`${detail.title} - ${selectedWard} - ${selectedAcademicYear.name}`}
+                filename={`${detail.key}-${selectedWard.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${selectedAcademicYear.name}`}
+                headers={dataset.headers}
+                rows={dataset.rows}
+              />
+              <button>
+                <Printer /> Print
+              </button>
+            </div>
+          </div>
+          <div className="report-preview-card">
+            <ReportPreviewBody
+              report={detail}
+              dataset={dataset}
+              selectedWard={selectedWard}
             />
-            <button>
-              <Printer /> Print
-            </button>
           </div>
-        </div>
-        <div className="report-definition-strip">
-          <div>
-            <ClipboardCheck />
-            <span>Filters</span>
-            <strong>{detail.filters.join(", ")}</strong>
-          </div>
-          <div>
-            <Database />
-            <span>Sources</span>
-            <strong>{detail.dataSources.join(", ")}</strong>
-          </div>
-          <div>
-            <ShieldCheck />
-            <span>Output</span>
-            <strong>{detail.format}</strong>
-          </div>
-        </div>
-        <div className="report-preview-card">
-          <ReportPreviewBody report={detail} />
         </div>
       </div>
     </section>

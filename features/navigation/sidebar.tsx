@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  ArrowDownToLine,
   BookOpen,
   Building2,
   ChevronLeft,
@@ -44,7 +43,6 @@ const navGroups = [
     items: [
       ["Reports", FileBarChart2],
       ["Data Quality", ClipboardCheck],
-      ["Exports", ArrowDownToLine],
     ],
   },
   {

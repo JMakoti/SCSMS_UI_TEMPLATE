@@ -4465,17 +4465,33 @@ tbody tr:hover {
   gap: 14px;
   min-width: 0;
 }
+.report-info-panel {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  border: 1px solid #dfe7f1;
+  border-radius: 8px;
+  background: #fff;
+  padding: 16px;
+}
+.report-info-hero {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
 .report-toolbar-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  padding: 16px;
+  border: 1px solid #e7eef6;
+  border-radius: 8px;
+  background: #f8fbff;
+  padding: 12px;
 }
 .report-toolbar-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   min-width: 0;
 }
 .report-toolbar-icon {
@@ -4495,11 +4511,34 @@ tbody tr:hover {
 .report-toolbar-title h2 {
   margin: 0;
   color: #1e3a5f;
-  font-size: 18px;
+  font-size: 20px;
+}
+.report-toolbar-title h3 {
+  margin: 0;
+  color: #1e3a5f;
+  font-size: 13px;
 }
 .report-toolbar-title p {
   margin: 4px 0 0;
   color: #64748b;
+  font-size: 12px;
+}
+.report-info-status {
+  display: grid;
+  min-width: 120px;
+  justify-items: end;
+  gap: 5px;
+}
+.report-info-status span {
+  border-radius: 999px;
+  padding: 5px 8px;
+  color: #15803d;
+  background: #ecfdf3;
+  font-size: 10px;
+  font-weight: 800;
+}
+.report-info-status strong {
+  color: #1e3a5f;
   font-size: 12px;
 }
 .report-toolbar-actions {
@@ -4567,11 +4606,12 @@ tbody tr:hover {
   text-overflow: ellipsis;
 }
 .report-preview-card {
-  padding: 18px;
+  border: 1px solid #e7eef6;
+  box-shadow: 0 10px 26px rgba(30, 58, 95, 0.05);
 }
 .report-preview-body {
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 .report-stat-grid {
   display: grid;
@@ -4581,21 +4621,59 @@ tbody tr:hover {
 .report-stat-card {
   border: 1px solid #edf1f7;
   border-radius: 8px;
-  padding: 14px;
+  background: linear-gradient(180deg, #fff, #f8fbff);
+  padding: 13px;
 }
 .report-stat-card strong {
   display: block;
-  margin-top: 7px;
+  margin-top: 8px;
   color: #172554;
   font-size: 21px;
 }
+.report-stat-card small {
+  display: block;
+  margin-top: 4px;
+  color: #8493a6;
+  font-size: 10px;
+}
 .report-preview-content {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(220px, 0.8fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.62fr) minmax(260px, 0.72fr);
+  gap: 14px;
 }
 .report-preview-table-wrap {
+  min-width: 0;
   overflow-x: auto;
+  border: 1px solid #edf1f7;
+  border-radius: 8px;
+}
+.report-table-headline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid #edf1f7;
+  background: #fff;
+}
+.report-table-headline h3 {
+  margin: 0;
+  color: #1e3a5f;
+  font-size: 13px;
+}
+.report-table-headline p {
+  margin: 4px 0 0;
+  color: #8493a6;
+  font-size: 10px;
+}
+.report-table-headline span {
+  flex-shrink: 0;
+  border-radius: 999px;
+  padding: 5px 8px;
+  color: #1d4ed8;
+  background: #eff6ff;
+  font-size: 10px;
+  font-weight: 800;
 }
 .report-preview-table {
   width: 100%;
@@ -4623,15 +4701,17 @@ tbody tr:hover {
 }
 .report-table-pagination {
   border-top: 1px solid #e7eef6;
-  padding: 12px 0 0;
+  padding: 10px 12px;
 }
 .report-visual-card {
   display: grid;
   min-height: 220px;
+  align-content: start;
   place-items: center;
   border: 1px solid #edf1f7;
   border-radius: 8px;
-  padding: 18px;
+  background: linear-gradient(180deg, #fff, #f8fbff);
+  padding: 14px;
 }
 .report-visual-card h3 {
   justify-self: start;
@@ -4692,6 +4772,46 @@ tbody tr:hover {
   color: #64748b;
   font-size: 10px;
   font-style: normal;
+}
+.report-ward-chart {
+  display: grid;
+  width: 100%;
+  gap: 11px;
+  align-self: stretch;
+  margin-top: 12px;
+}
+.report-ward-chart span {
+  display: grid;
+  grid-template-columns: minmax(88px, 1fr) minmax(110px, 1.4fr) 34px;
+  align-items: center;
+  gap: 9px;
+  color: #52657d;
+  font-size: 10px;
+}
+.report-ward-chart b {
+  overflow: hidden;
+  color: #1e3a5f;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.report-ward-chart i {
+  display: block;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7eef6;
+}
+.report-ward-chart em {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+}
+.report-ward-chart strong {
+  color: #1e3a5f;
+  font-size: 11px;
+  text-align: right;
 }
 .integrity-card {
   display: flex;
@@ -5374,6 +5494,7 @@ tbody tr:hover {
   background: #111b2b;
 }
 .dark-theme .report-selector-panel,
+.dark-theme .report-info-panel,
 .dark-theme .report-toolbar-card,
 .dark-theme .report-preview-card,
 .dark-theme .report-definition-strip > div,
@@ -5389,6 +5510,10 @@ tbody tr:hover {
 .dark-theme .report-definition-strip > div {
   background: #162235;
 }
+.dark-theme .report-info-status span {
+  color: #bbf7d0;
+  background: #064e3b;
+}
 .dark-theme .report-toolbar-actions select,
 .dark-theme .report-toolbar-actions button {
   border-color: #263449;
@@ -5396,15 +5521,20 @@ tbody tr:hover {
   color: #cbd5e1;
 }
 .dark-theme .report-toolbar-title h2,
+.dark-theme .report-toolbar-title h3,
+.dark-theme .report-info-status strong,
 .dark-theme .report-definition-strip strong,
 .dark-theme .report-stat-card strong,
 .dark-theme .report-visual-card h3,
+.dark-theme .report-table-headline h3,
 .dark-theme .report-overview-sections h3,
 .dark-theme .report-donut-preview,
 .dark-theme .report-progress-ring {
   color: #e2e8f0;
 }
 .dark-theme .report-toolbar-title p,
+.dark-theme .report-table-headline p,
+.dark-theme .report-stat-card small,
 .dark-theme .report-preview-table td,
 .dark-theme .report-overview-sections li,
 .dark-theme .report-donut-preview span,
@@ -5416,11 +5546,26 @@ tbody tr:hover {
   background: #182335;
   color: #9aaac0;
 }
+.dark-theme .report-table-headline,
 .dark-theme .report-preview-table td {
   border-color: #263449;
 }
+.dark-theme .report-table-headline,
+.dark-theme .report-stat-card {
+  background: #111b2b;
+}
 .dark-theme .report-table-pagination {
   border-color: #263449;
+}
+.dark-theme .report-ward-chart span {
+  color: #9aaac0;
+}
+.dark-theme .report-ward-chart b,
+.dark-theme .report-ward-chart strong {
+  color: #e2e8f0;
+}
+.dark-theme .report-ward-chart i {
+  background: #263449;
 }
 .dark-theme .school-staff-header {
   border-color: #263449;
@@ -5467,6 +5612,13 @@ tbody tr:hover {
   .report-toolbar-card {
     align-items: stretch;
     flex-direction: column;
+  }
+  .report-info-hero {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+  .report-info-status {
+    grid-column: 1 / -1;
+    justify-items: start;
   }
   .report-toolbar-actions {
     justify-content: flex-start;

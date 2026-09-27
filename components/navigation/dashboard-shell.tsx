@@ -15,7 +15,6 @@ import {
   Building2,
   FileBarChart2,
   ClipboardCheck,
-  ArrowDownToLine,
   History,
   DatabaseBackup,
   RefreshCw,
@@ -47,7 +46,6 @@ const groups = [
     items: [
       ["Reports", "/reports", FileBarChart2],
       ["Data Quality", "/data-quality", ClipboardCheck],
-      ["Exports", "/exports", ArrowDownToLine],
     ],
   },
   {
