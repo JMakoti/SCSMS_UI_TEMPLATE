@@ -309,6 +309,17 @@ function TrendsTab({ school }: { school: string }) {
     year: String(2023 + index),
     mean,
   }));
+  const latest = values[values.length - 1];
+  const previous = values[values.length - 2] ?? latest;
+  const change = latest - previous;
+  const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+  const scoreUnit = assessment === "KCSE" ? "points" : "%";
+  const formattedChange =
+    assessment === "KCSE" ? change.toFixed(1) : `${Math.round(change)}%`;
+  const formattedAverage =
+    assessment === "KCSE" ? average.toFixed(1) : `${Math.round(average)}%`;
+  const formattedLatest =
+    assessment === "KCSE" ? latest.toFixed(1) : `${Math.round(latest)}%`;
 
   return (
     <section className="panel detail-panel performance-overview performance-overview-light">
@@ -317,30 +328,52 @@ function TrendsTab({ school }: { school: string }) {
         <p>Mean score against the year of the exam</p>
       </header>
       <section className="performance-trend-panel trends-line-panel">
-        <div className="performance-section-title">
+        <div className="performance-section-title trends-chart-heading">
           <div>
             <h3>Mean score by year</h3>
             <p>Historical {assessment} examination performance</p>
           </div>
           <span className="trend-axis-note">
-            Y-axis: Mean score · X-axis: Exam year
+            Y-axis: Mean score / X-axis: Exam year
           </span>
+        </div>
+        <div className="trend-summary-grid">
+          {[
+            ["Current mean", formattedLatest, "Latest exam year"],
+            [
+              "Year change",
+              `${change >= 0 ? "+" : ""}${formattedChange}`,
+              `Measured in ${scoreUnit}`,
+            ],
+            ["Four-year average", formattedAverage, "Across 2023-2026"],
+          ].map(([label, value, note]) => (
+            <div className="trend-summary-card" key={label}>
+              <span>{label}</span>
+              <strong>{value}</strong>
+              <small>{note}</small>
+            </div>
+          ))}
         </div>
         <div className="trend-chart-shell">
           <div className="trend-chart-legend">
-            <span className="trend-legend-dot" aria-hidden="true" />
-            <span>Mean score</span>
+            <span>
+              <i className="trend-legend-dot" aria-hidden="true" />
+              Mean score
+            </span>
+            <b>
+              {chartData[0].year} - {chartData[chartData.length - 1].year}
+            </b>
           </div>
-          <div className="h-[300px] w-full px-2 py-5">
+          <div className="trend-chart-canvas h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={chartData}
-                margin={{ top: 12, right: 18, left: 4, bottom: 8 }}
+                margin={{ top: 18, right: 22, left: 0, bottom: 10 }}
               >
                 <CartesianGrid
                   vertical={false}
-                  stroke="var(--border)"
-                  strokeDasharray="4 4"
+                  stroke="#dce5ef"
+                  strokeDasharray="3 7"
                 />
                 <XAxis
                   dataKey="year"
@@ -357,7 +390,7 @@ function TrendsTab({ school }: { school: string }) {
                 />
                 <Tooltip
                   cursor={{
-                    stroke: "var(--chart-3)",
+                    stroke: "#2563eb",
                     strokeDasharray: "4 4",
                   }}
                   formatter={(value) => [value ?? 0, "Mean score"]}
@@ -365,18 +398,18 @@ function TrendsTab({ school }: { school: string }) {
                 <Line
                   dataKey="mean"
                   type="monotone"
-                  stroke="var(--chart-2)"
-                  strokeWidth={3}
+                  stroke="#2563eb"
+                  strokeWidth={4}
                   dot={{
                     r: 5,
-                    fill: "var(--chart-1)",
-                    stroke: "var(--chart-2)",
+                    fill: "#ffffff",
+                    stroke: "#2563eb",
                     strokeWidth: 2,
                   }}
                   activeDot={{
                     r: 7,
-                    fill: "var(--chart-1)",
-                    stroke: "var(--chart-2)",
+                    fill: "#2563eb",
+                    stroke: "#ffffff",
                     strokeWidth: 2,
                   }}
                 />

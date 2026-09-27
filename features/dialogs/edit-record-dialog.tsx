@@ -37,8 +37,20 @@ import { useForm } from "react-hook-form";
 type EditField = {
   label: string;
   name: string;
-  kind?: "input" | "select";
+  kind?: "input" | "select" | "textarea";
+  inputType?: "text" | "number";
+  showsPercentage?: boolean;
 };
+
+function calculatePercentage(
+  value: string | undefined,
+  total: string | undefined,
+) {
+  const count = Number(value) || 0;
+  const totalCount = Number(total) || 0;
+  if (!totalCount) return "0%";
+  return `${Math.round((count / totalCount) * 100)}%`;
+}
 
 export function EditRecordDialog({
   active,
@@ -133,20 +145,69 @@ export function EditRecordDialog({
               ? ["School", "Contact name", "Role", "Phone", "Email"].map(
                   (label) => ({ label, name: label }),
                 )
-              : active === "Ward"
+              : active === "School Performance"
                 ? [
-                    { label: "Ward name", name: "wardName" },
-                    { label: "Ward code", name: "wardCode" },
-                    { label: "County", name: "county" },
-                    { label: "County code", name: "countyCode" },
-                    { label: "Sub-County", name: "subCounty" },
-                    { label: "Sub-County code", name: "subCountyCode" },
-                    { label: "Constituency", name: "constituency" },
-                    { label: "Constituency code", name: "constituencyCode" },
+                    { label: "School", name: "school" },
+                    { label: "Assessment", name: "assessment", kind: "select" },
+                    { label: "Academic year", name: "academicYear" },
+                    { label: "Level", name: "level", kind: "select" },
+                    { label: "KNEC code", name: "knecCode" },
+                    {
+                      label: "Candidates",
+                      name: "candidates",
+                      inputType: "number",
+                    },
+                    {
+                      label: "Mean score",
+                      name: "meanScore",
+                      inputType: "number",
+                    },
+                    {
+                      label: "Subjects",
+                      name: "subjects",
+                      inputType: "number",
+                    },
+                    { label: "Best subject", name: "bestSubject" },
+                    {
+                      label: "Exceeding expectation",
+                      name: "exceedingCount",
+                      inputType: "number",
+                      showsPercentage: true,
+                    },
+                    {
+                      label: "Meeting expectation",
+                      name: "meetingCount",
+                      inputType: "number",
+                      showsPercentage: true,
+                    },
+                    {
+                      label: "Approaching expectation",
+                      name: "approachingCount",
+                      inputType: "number",
+                      showsPercentage: true,
+                    },
+                    {
+                      label: "Below expectation",
+                      name: "belowCount",
+                      inputType: "number",
+                      showsPercentage: true,
+                    },
+                    { label: "Notes", name: "notes", kind: "textarea" },
                   ]
-                : ["Report type", "Reporting period", "Description"].map(
-                    (label) => ({ label, name: label }),
-                  );
+                : active === "Ward"
+                  ? [
+                      { label: "Ward name", name: "wardName" },
+                      { label: "Ward code", name: "wardCode" },
+                      { label: "County", name: "county" },
+                      { label: "County code", name: "countyCode" },
+                      { label: "Sub-County", name: "subCounty" },
+                      { label: "Sub-County code", name: "subCountyCode" },
+                      { label: "Constituency", name: "constituency" },
+                      { label: "Constituency code", name: "constituencyCode" },
+                    ]
+                  : ["Report type", "Reporting period", "Description"].map(
+                      (label) => ({ label, name: label }),
+                    );
 
   const getDefaultValue = (field: EditField) => {
     if (active === "Schools" && schoolInfo) {
@@ -223,6 +284,37 @@ export function EditRecordDialog({
       return values[field.label] ?? "";
     }
 
+    if (active === "School Performance") {
+      const values: Record<string, string> = {
+        school: item,
+        assessment: item.toLowerCase().includes("junior")
+          ? "KJSEA"
+          : item.toLowerCase().includes("secondary") ||
+              item.toLowerCase().includes("senior")
+            ? "KCSE"
+            : "KPSEA",
+        academicYear: "2026",
+        level: item.toLowerCase().includes("junior")
+          ? "Junior Secondary"
+          : item.toLowerCase().includes("secondary") ||
+              item.toLowerCase().includes("senior")
+            ? "Senior School"
+            : "Primary",
+        knecCode: "04122123",
+        candidates: "50",
+        meanScore: "9.30",
+        subjects: "12",
+        bestSubject: "Mathematics",
+        exceedingCount: "12",
+        meetingCount: "24",
+        approachingCount: "10",
+        belowCount: "4",
+        notes: "Latest assessment record",
+      };
+
+      return values[field.name] ?? "";
+    }
+
     return field.label === "School" || field.label === "Assigned school"
       ? item
       : field.label === "Full name"
@@ -244,7 +336,7 @@ export function EditRecordDialog({
                       : "";
   };
 
-  const { register, handleSubmit } = useForm<
+  const { register, handleSubmit, watch } = useForm<
     EditRecordFormValues | EditSchoolRecordFormValues | EditWardRecordFormValues
   >({
     resolver: zodResolver(
@@ -260,6 +352,7 @@ export function EditRecordDialog({
       ),
     },
   });
+  const watchedFields = watch("fields") as Record<string, string | undefined>;
   const schoolSelectOptions: Record<
     string,
     { label: string; value: string }[]
@@ -293,6 +386,21 @@ export function EditRecordDialog({
       { label: "Verified", value: "VERIFIED" },
       { label: "Partial", value: "PARTIAL" },
       { label: "Secondary source", value: "SECONDARY_SOURCE" },
+    ],
+  };
+  const performanceSelectOptions: Record<
+    string,
+    { label: string; value: string }[]
+  > = {
+    assessment: [
+      { label: "KPSEA", value: "KPSEA" },
+      { label: "KJSEA", value: "KJSEA" },
+      { label: "KCSE", value: "KCSE" },
+    ],
+    level: [
+      { label: "Primary", value: "Primary" },
+      { label: "Junior Secondary", value: "Junior Secondary" },
+      { label: "Senior School", value: "Senior School" },
     ],
   };
 
@@ -342,6 +450,20 @@ export function EditRecordDialog({
                           </option>
                         ))}
                       </select>
+                    ) : active === "School Performance" &&
+                      performanceSelectOptions[field.name] ? (
+                      <select {...register(`fields.${field.name}`)}>
+                        {performanceSelectOptions[field.name].map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    ) : field.kind === "textarea" ? (
+                      <textarea
+                        {...register(`fields.${field.name}`)}
+                        placeholder={`Enter ${field.label.toLowerCase()}`}
+                      />
                     ) : field.label === "Term" ||
                       field.label === "Employment type" ||
                       field.label === "Employer" ||
@@ -392,10 +514,24 @@ export function EditRecordDialog({
                         )}
                       </select>
                     ) : (
-                      <input
-                        {...register(`fields.${field.name}`)}
-                        placeholder={`Enter ${field.label.toLowerCase()}`}
-                      />
+                      <>
+                        <input
+                          {...register(`fields.${field.name}`)}
+                          type={field.inputType ?? "text"}
+                          min={field.inputType === "number" ? "0" : undefined}
+                          step={field.name === "meanScore" ? "0.01" : undefined}
+                          placeholder={`Enter ${field.label.toLowerCase()}`}
+                        />
+                        {active === "School Performance" &&
+                          field.showsPercentage && (
+                            <span className="calculated-percentage">
+                              {calculatePercentage(
+                                watchedFields?.[field.name],
+                                watchedFields?.candidates,
+                              )}
+                            </span>
+                          )}
+                      </>
                     )}
                   </label>
                 ))}

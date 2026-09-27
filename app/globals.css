@@ -3842,6 +3842,15 @@ tbody tr:hover {
   color: #9bb0cb;
   font-size: 11px;
 }
+.performance-detail-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.performance-form-dialog {
+  width: min(100%, 620px);
+}
 .performance-metric-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3960,16 +3969,65 @@ tbody tr:hover {
 .trends-line-panel .performance-section-title {
   align-items: flex-start;
 }
+.trends-chart-heading {
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+.trend-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 12px 12px 0;
+}
+.trend-summary-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid #e4ecf7;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+.trend-summary-card span {
+  color: #718096;
+  font-size: 9px;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+.trend-summary-card strong {
+  color: #1e3a5f;
+  font-size: 18px;
+  line-height: 1;
+}
+.trend-summary-card small {
+  color: #8493a6;
+  font-size: 10px;
+}
 .trend-chart-shell {
   position: relative;
-  padding: 0 12px 10px;
+  margin: 12px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #e4ecf7;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
 }
 .trend-chart-legend {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 7px;
-  padding: 12px 8px 0;
+  padding: 12px 14px 0;
   color: #9bb0cb;
+  font-size: 10px;
+}
+.trend-chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.trend-chart-legend b {
+  color: #1e3a5f;
   font-size: 10px;
 }
 .trend-legend-dot {
@@ -3978,6 +4036,9 @@ tbody tr:hover {
   border-radius: 999px;
   background: #5fa9ff;
   box-shadow: 0 0 0 3px rgba(95, 169, 255, 0.14);
+}
+.trend-chart-canvas {
+  padding: 12px 10px 18px;
 }
 .trends-line-panel .recharts-cartesian-axis-tick-value {
   fill: #8da6c5;
@@ -4074,6 +4135,33 @@ tbody tr:hover {
   border-color: #dce5ef;
   color: #1e3a5f;
   background: #f8fafc;
+}
+.performance-overview-light .performance-section-title .edit-school-button,
+.performance-overview-light .performance-detail-heading .edit-school-button {
+  border-color: #1d4ed8;
+  color: #fff;
+  background: #2563eb;
+}
+.performance-add-subject-button {
+  white-space: nowrap;
+}
+.calculated-percentage {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 22px;
+  padding: 4px 8px;
+  border: 1px solid #dbeafe;
+  border-radius: 999px;
+  color: #1d4ed8;
+  background: #eff6ff;
+  font-size: 10px;
+  font-weight: 750;
+}
+.dark-theme .calculated-percentage {
+  border-color: #315f95;
+  color: #bfdbfe;
+  background: #172a46;
 }
 .performance-overview-light .performance-table th,
 .performance-overview-light .performance-table td {
@@ -4226,6 +4314,10 @@ tbody tr:hover {
   .trends-line-panel .performance-section-title {
     padding: 12px 10px;
   }
+  .trend-summary-grid {
+    grid-template-columns: 1fr;
+    padding-inline: 10px;
+  }
   .trend-axis-note {
     align-self: flex-start;
     max-width: 100%;
@@ -4234,10 +4326,12 @@ tbody tr:hover {
     text-align: left;
   }
   .trend-chart-shell {
-    padding: 0 4px 8px;
+    margin: 10px;
   }
   .trend-chart-legend {
-    padding: 10px 6px 0;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 10px 12px 0;
   }
   .trends-line-panel [class~="h-[300px]"] {
     height: 220px;
@@ -8089,6 +8183,18 @@ tbody tr:hover {
 
   .enrollment-register-actions {
     width: 100%;
+  }
+
+  .performance-detail-heading,
+  .performance-section-title {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .performance-detail-heading .edit-school-button,
+  .performance-section-title .edit-school-button {
+    width: 100%;
+    justify-content: center;
   }
 
   .enrollment-search {
