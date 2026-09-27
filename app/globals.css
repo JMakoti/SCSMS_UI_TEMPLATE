@@ -172,8 +172,11 @@
     font-size: 13px;
   }
   .login-shell {
+    position: relative;
+    isolation: isolate;
     display: grid;
     min-height: 100vh;
+    overflow: hidden;
     place-items: center;
     padding: 24px;
     background: radial-gradient(
@@ -182,14 +185,86 @@
       #f6f8fc 38%,
       #eef3f9 100%
     );
+    background-size: 140% 140%;
+    animation: login-background-shift 18s ease-in-out infinite alternate;
+  }
+  .login-shell::before,
+  .login-shell::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -18%;
+    pointer-events: none;
+  }
+  .login-shell::before {
+    opacity: 0.58;
+    background-image:
+      linear-gradient(rgba(37, 99, 235, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37, 99, 235, 0.08) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(
+      130deg,
+      transparent 0%,
+      #000 24%,
+      #000 72%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      130deg,
+      transparent 0%,
+      #000 24%,
+      #000 72%,
+      transparent 100%
+    );
+    animation: login-grid-pan 24s linear infinite;
+  }
+  .login-shell::after {
+    opacity: 0.72;
+    background:
+      linear-gradient(
+        115deg,
+        transparent 12%,
+        rgba(37, 99, 235, 0.1) 36%,
+        rgba(14, 165, 233, 0.12) 48%,
+        transparent 68%
+      ),
+      radial-gradient(
+        circle at 78% 18%,
+        rgba(187, 247, 208, 0.54),
+        transparent 28%
+      ),
+      radial-gradient(
+        circle at 18% 82%,
+        rgba(191, 219, 254, 0.68),
+        transparent 30%
+      );
+    filter: blur(2px);
+    animation: login-light-sweep 14s ease-in-out infinite alternate;
+  }
+  .login-card::before {
+    content: "";
+    position: absolute;
+    inset: -80px;
+    z-index: -1;
+    background: conic-gradient(
+      from 0deg,
+      transparent,
+      rgba(37, 99, 235, 0.08),
+      transparent,
+      rgba(14, 165, 233, 0.07),
+      transparent
+    );
+    animation: login-background-sweep 18s linear infinite;
   }
   .login-card {
+    position: relative;
     width: min(100%, 430px);
     padding: 34px 36px;
     border: 1px solid #d9e4f0;
     border-radius: 20px;
     background: #fff;
     box-shadow: 0 20px 60px rgba(30, 58, 95, 0.12);
+    animation: login-card-in 0.62s ease-out both;
   }
   .login-brand {
     display: flex;
@@ -205,6 +280,8 @@
     border-radius: 11px;
     background: #1d4ed8;
     color: #fff;
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.2);
+    animation: login-mark-pulse 2.8s ease-in-out infinite;
   }
   .login-brand-mark svg {
     width: 21px;
@@ -310,6 +387,10 @@
   }
   .login-submit svg {
     width: 15px;
+    transition: transform 0.18s ease;
+  }
+  .login-submit:hover svg {
+    transform: translateX(2px);
   }
   .login-error {
     margin: -5px 0 0;
@@ -336,6 +417,64 @@
     text-align: center;
     color: #9aaac0;
     font-size: 10px;
+  }
+  @keyframes login-card-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  @keyframes login-background-shift {
+    from {
+      background-position: 0% 28%;
+    }
+    to {
+      background-position: 100% 72%;
+    }
+  }
+  @keyframes login-grid-pan {
+    from {
+      transform: translate3d(-22px, -18px, 0) rotate(-2deg);
+    }
+    to {
+      transform: translate3d(22px, 18px, 0) rotate(2deg);
+    }
+  }
+  @keyframes login-light-sweep {
+    from {
+      transform: translate3d(-4%, -2%, 0) scale(1);
+    }
+    to {
+      transform: translate3d(4%, 3%, 0) scale(1.04);
+    }
+  }
+  @keyframes login-mark-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.22);
+    }
+    50% {
+      box-shadow: 0 0 0 9px rgba(37, 99, 235, 0);
+    }
+  }
+  @keyframes login-background-sweep {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .login-shell::before,
+    .login-shell::after,
+    .login-card::before,
+    .login-shell,
+    .login-card,
+    .login-brand-mark {
+      animation: none;
+    }
   }
   @media (max-width: 480px) {
     .login-card {
