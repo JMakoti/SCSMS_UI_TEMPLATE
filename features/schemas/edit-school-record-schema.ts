@@ -5,6 +5,9 @@ export const editSchoolRecordSchema = z.object({
   fields: z.object({
     schoolCode: z.string().trim().optional(),
     uicCode: z.string().trim().optional(),
+    knecCode: z.string().trim().optional(),
+    tscCode: z.string().trim().optional(),
+    regNumber: z.string().trim().optional(),
     officialName: requiredText("Official school name"),
     displayName: requiredText("Display name"),
     institutionType: z.enum([
@@ -15,6 +18,10 @@ export const editSchoolRecordSchema = z.object({
       "OTHER",
     ]),
     sourceInstitutionType: z.string().trim().optional(),
+    registrationStatus: z
+      .enum(["REGISTERED", "PENDING", "SUSPENDED", "CLOSED"])
+      .optional(),
+    level: z.enum(["Primary", "Junior_Secondary", "Senior_School"]),
     ownershipType: z.enum([
       "PUBLIC",
       "PRIVATE",
@@ -23,12 +30,8 @@ export const editSchoolRecordSchema = z.object({
       "UNKNOWN",
     ]),
     genderType: z.enum(["MIXED", "BOYS", "GIRLS", "UNKNOWN"]),
-    boardingType: z.enum([
-      "DAY",
-      "BOARDING",
-      "DAY_AND_BOARDING",
-      "UNKNOWN",
-    ]),
+    boardingType: z.enum(["DAY", "BOARDING", "DAY_AND_BOARDING", "UNKNOWN"]),
+    titleDeed: z.enum(["YES", "NO"]),
     county: z.literal("Kilifi"),
     subCounty: z.literal("Rabai"),
     ward: z.string().trim().optional(),

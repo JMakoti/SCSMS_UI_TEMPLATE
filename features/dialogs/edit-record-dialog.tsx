@@ -59,13 +59,19 @@ export function EditRecordDialog({
       ? [
           { label: "School code", name: "schoolCode" },
           { label: "UIC code", name: "uicCode" },
+          { label: "KNEC code", name: "knecCode" },
+          { label: "TSC code", name: "tscCode" },
+          { label: "Registration number", name: "regNumber" },
           { label: "Official school name", name: "officialName" },
           { label: "Display name", name: "displayName" },
           { label: "Institution type", name: "institutionType" },
           { label: "Source institution type", name: "sourceInstitutionType" },
+          { label: "Registration status", name: "registrationStatus" },
+          { label: "Level", name: "level" },
           { label: "Ownership", name: "ownershipType" },
           { label: "Gender", name: "genderType" },
           { label: "Boarding", name: "boardingType" },
+          { label: "Title deed", name: "titleDeed" },
           { label: "County", name: "county" },
           { label: "Sub-County", name: "subCounty" },
           { label: "Ward", name: "ward" },
@@ -130,16 +136,28 @@ export function EditRecordDialog({
 
   const getDefaultValue = (field: EditField) => {
     if (active === "Schools" && schoolInfo) {
+      const level =
+        schoolInfo.institutionType === "JUNIOR_SECONDARY"
+          ? "Junior_Secondary"
+          : schoolInfo.institutionType === "SENIOR_SECONDARY"
+            ? "Senior_School"
+            : "Primary";
       const values: Record<string, string> = {
         schoolCode: schoolInfo.schoolCode ?? "",
         uicCode: schoolInfo.uicCode ?? "",
+        knecCode: "",
+        tscCode: "",
+        regNumber: "",
         officialName: schoolInfo.officialName,
         displayName: schoolInfo.displayName,
         institutionType: schoolInfo.institutionType,
         sourceInstitutionType: schoolInfo.sourceInstitutionType ?? "",
+        registrationStatus: "REGISTERED",
+        level,
         ownershipType: schoolInfo.ownershipType,
         genderType: schoolInfo.genderType,
         boardingType: schoolInfo.boardingType,
+        titleDeed: "NO",
         county: schoolInfo.county,
         subCounty: schoolInfo.subCounty,
         ward: schoolInfo.ward ?? "",
@@ -245,6 +263,17 @@ export function EditRecordDialog({
       { label: "Integrated", value: "INTEGRATED" },
       { label: "Other", value: "OTHER" },
     ],
+    registrationStatus: [
+      { label: "Registered", value: "REGISTERED" },
+      { label: "Pending", value: "PENDING" },
+      { label: "Suspended", value: "SUSPENDED" },
+      { label: "Closed", value: "CLOSED" },
+    ],
+    level: [
+      { label: "Primary", value: "Primary" },
+      { label: "Junior Secondary", value: "Junior_Secondary" },
+      { label: "Senior School", value: "Senior_School" },
+    ],
     ownershipType: [
       { label: "Public", value: "PUBLIC" },
       { label: "Private", value: "PRIVATE" },
@@ -263,6 +292,10 @@ export function EditRecordDialog({
       { label: "Boarding", value: "BOARDING" },
       { label: "Day and boarding", value: "DAY_AND_BOARDING" },
       { label: "Unknown", value: "UNKNOWN" },
+    ],
+    titleDeed: [
+      { label: "No", value: "NO" },
+      { label: "Yes", value: "YES" },
     ],
     county: [{ label: "Kilifi", value: "Kilifi" }],
     subCounty: [{ label: "Rabai", value: "Rabai" }],

@@ -18,19 +18,16 @@ export const addSchoolSchema = z.object({
   registrationStatus: z
     .enum(["REGISTERED", "PENDING", "SUSPENDED", "CLOSED"])
     .optional(),
-  level: z.enum([
-    "Primary",
-    "Junior_Secondary",
-    "Senior_School",
-  ]),
+  level: z.enum(["Primary", "Junior_Secondary", "Senior_School"]),
   ownershipType: z.enum([
     "Goverment",
     "Private",
     "Community",
-    "NGO/Organization"
+    "NGO/Organization",
   ]),
   genderType: z.enum(["MIXED", "BOYS", "GIRLS"]),
   boardingType: z.enum(["DAY", "BOARDING", "DAY_AND_BOARDING"]),
+  titleDeed: z.enum(["YES", "NO"]),
   county: z.literal("Kilifi"),
   subCounty: z.literal("Rabai"),
   ward: z.string().trim().optional(),

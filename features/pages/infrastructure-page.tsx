@@ -6,7 +6,6 @@ import {
   Building2,
   Check,
   ChevronDown,
-  Download,
   Pencil,
   Plus,
   Save,
@@ -26,6 +25,7 @@ import type {
   InfrastructureProjectRecord,
 } from "@/features/types/seeders";
 import StatusBadge from "@/features/ui/status-badge";
+import { ExportMenu } from "@/features/ui/export-menu";
 
 const registrySchools = [...rabaiSchools].sort((a, b) =>
   a.displayName.localeCompare(b.displayName),
@@ -104,10 +104,7 @@ export function AddInfrastructureDialog({
                 </label>
                 <label>
                   Project name
-                  <input
-                    {...register("contractor")}
-                    placeholder="Contractor"
-                  />
+                  <input {...register("contractor")} placeholder="Contractor" />
                 </label>
                 <label>
                   Project category
@@ -344,12 +341,24 @@ function InfrastructureContent({
               <Plus />
               Add Infrastructure
             </button>
-            <button
-              className="outline-button"
-              onClick={() => window.alert("Infrastructure export prepared")}
-            >
-              <Download /> Export
-            </button>
+            <ExportMenu
+              title={`${school} infrastructure facilities`}
+              filename="infrastructure-facilities"
+              headers={[
+                "Facility",
+                "Available",
+                "Good condition",
+                "Needs repair",
+                "Status",
+              ]}
+              rows={facilityRows.map((row) => [
+                row.facility,
+                row.available,
+                row.good,
+                row.needsRepair,
+                row.status,
+              ])}
+            />
           </div>
         </div>
         <div className="infrastructure-table">
@@ -477,12 +486,28 @@ function InfrastructureContent({
               {detail ? ` for ${school}` : " across schools"}
             </p>
           </div>
-          <button
-            className="outline-button"
-            onClick={() => window.alert("Projects export prepared")}
-          >
-            <Download /> Export
-          </button>
+          <ExportMenu
+            title="Infrastructure projects"
+            filename="infrastructure-projects"
+            headers={[
+              "Project",
+              "School",
+              "Year",
+              "Term",
+              "Status",
+              "Budget",
+              "Detail",
+            ]}
+            rows={visibleProjects.map((project) => [
+              project.name,
+              project.school,
+              project.year,
+              project.term,
+              project.status,
+              project.budget,
+              project.detail,
+            ])}
+          />
         </div>
         <div className="infrastructure-project-list">
           {visibleProjects.length === 0 && (

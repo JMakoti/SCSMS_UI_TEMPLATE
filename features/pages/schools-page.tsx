@@ -47,12 +47,17 @@ function SchoolsPage({
   const [selected, setSelected] = useState<string[]>([]);
   const [columns, setColumns] = useState(true);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const schoolLevels = [
-    "All",
-    "Primary",
-    "Junior_Secondary",
-    "Senior_School",
+  const schoolLevels: {
+    label: string;
+    value: SchoolRegistryFilterValues["filter"];
+  }[] = [
+    { label: "All", value: "All" },
+    { label: "Primary", value: "PRIMARY" },
+    { label: "Junior Secondary", value: "JUNIOR_SECONDARY" },
+    { label: "Senior Secondary", value: "SENIOR_SECONDARY" },
+    { label: "Integrated", value: "INTEGRATED" },
   ];
   const filtered = useMemo(
     () =>
@@ -87,6 +92,119 @@ function SchoolsPage({
     setSelected((p) =>
       p.includes(id) ? p.filter((x) => x !== id) : [...p, id],
     );
+  const getExportData = (rows = filtered) => {
+    const headers = [
+      "School Code",
+      "School Name",
+      "Official Name",
+      "Type",
+      "Ownership",
+      "Gender",
+      "Boarding",
+      "Ward",
+      "Status",
+    ];
+    const body = rows.map((school) => [
+      school.schoolCode ?? "",
+      school.displayName,
+      school.officialName,
+      school.institutionType.replaceAll("_", " "),
+      school.ownershipType.replaceAll("_", " "),
+      school.genderType ?? "",
+      school.boardingType.replaceAll("_", " "),
+      school.ward ?? "",
+      school.isActive ? "Active" : "Inactive",
+    ]);
+
+    return { headers, body };
+  };
+  const escapeHtml = (value: string) =>
+    String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  const buildExportTable = (rows = filtered) => {
+    const { headers, body } = getExportData(rows);
+    const headerHtml = headers
+      .map((header) => `<th>${escapeHtml(header)}</th>`)
+      .join("");
+    const bodyHtml = body
+      .map(
+        (row) =>
+          `<tr>${row
+            .map((value) => `<td>${escapeHtml(String(value))}</td>`)
+            .join("")}</tr>`,
+      )
+      .join("");
+
+    return `<table><thead><tr>${headerHtml}</tr></thead><tbody>${bodyHtml}</tbody></table>`;
+  };
+  const downloadBlob = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+  const exportExcel = (rows = filtered) => {
+    const workbook = `<!doctype html><html><head><meta charset="utf-8" /></head><body>${buildExportTable(rows)}</body></html>`;
+    const blob = new Blob([workbook], {
+      type: "application/vnd.ms-excel;charset=utf-8",
+    });
+
+    downloadBlob(
+      blob,
+      `rabai-schools-${new Date().toISOString().slice(0, 10)}.xls`,
+    );
+  };
+  const exportPdf = (rows = filtered) => {
+    const printWindow = window.open("", "_blank", "width=1024,height=768");
+
+    if (!printWindow) {
+      window.alert("Allow pop-ups to export this report as PDF.");
+      return;
+    }
+
+    printWindow.document.write(`
+      <!doctype html>
+      <html>
+        <head>
+          <title>Rabai Schools Export</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #0f172a; margin: 24px; }
+            h1 { font-size: 20px; margin: 0 0 4px; }
+            p { color: #64748b; font-size: 12px; margin: 0 0 16px; }
+            table { width: 100%; border-collapse: collapse; font-size: 11px; }
+            th, td { border: 1px solid #dbe3ef; padding: 7px 8px; text-align: left; }
+            th { background: #f8fafc; color: #334155; }
+          </style>
+        </head>
+        <body>
+          <h1>Rabai Schools</h1>
+          <p>Generated ${new Date().toLocaleString()}</p>
+          ${buildExportTable(rows)}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
+  const selectedRows = filtered.filter((school) =>
+    selected.includes(school.id),
+  );
+  const reloadTable = () => {
+    reset({ query: "", filter: "All", rowsPerPage: 25 });
+    setSelected([]);
+    setColumns(true);
+    setFiltersOpen(false);
+    setExportOpen(false);
+    setPage(1);
+  };
+
   return (
     <div className="content">
       <PageHeader
@@ -111,15 +229,46 @@ function SchoolsPage({
           </div>
         </div>
         <div className="toolbar-right">
-          <button className="outline-button">
+          <button className="outline-button" type="button">
             <UploadIcon /> Import
           </button>
-          <button className="outline-button">
-            <Download /> Export
-          </button>
+          <div className="filter-menu-wrap">
+            <button
+              className={`outline-button ${exportOpen ? "active-tool" : ""}`}
+              type="button"
+              onClick={() => setExportOpen((value) => !value)}
+              aria-expanded={exportOpen}
+            >
+              <Download /> Export
+            </button>
+            {exportOpen && (
+              <div className="school-filter-menu">
+                <span>Export format</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    exportExcel();
+                    setExportOpen(false);
+                  }}
+                >
+                  Excel (.xls)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    exportPdf();
+                    setExportOpen(false);
+                  }}
+                >
+                  PDF
+                </button>
+              </div>
+            )}
+          </div>
           <button
             className={`outline-button ${columns ? "active-tool" : ""}`}
             onClick={() => setColumns(!columns)}
+            type="button"
           >
             <Columns3 /> Columns
           </button>
@@ -138,28 +287,30 @@ function SchoolsPage({
                 <span>Institution type</span>
                 {schoolLevels.map((level) => (
                   <button
-                    className={filter === level ? "selected" : ""}
-                    key={level}
+                    className={filter === level.value ? "selected" : ""}
+                    key={level.value}
                     onClick={() => {
-                      setValue(
-                        "filter",
-                        level as SchoolRegistryFilterValues["filter"],
-                        {
-                          shouldDirty: true,
-                          shouldValidate: true,
-                        },
-                      );
+                      setValue("filter", level.value, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
                       setFiltersOpen(false);
                     }}
                     type="button"
                   >
-                    {level.replaceAll("_", " ")}
+                    {level.label}
                   </button>
                 ))}
               </div>
             )}
           </div>
-          <button className="icon-button border-button">
+          <button
+            className="icon-button border-button"
+            type="button"
+            onClick={reloadTable}
+            aria-label="Reload schools table"
+            title="Reload table"
+          >
             <RefreshCw />
           </button>
         </div>
@@ -167,7 +318,10 @@ function SchoolsPage({
       {selected.length > 0 && (
         <div className="bulk-bar">
           <span>{selected.length} selected</span>
-          <button>Export selected</button>
+          <button onClick={() => exportExcel(selectedRows)}>
+            Export Excel
+          </button>
+          <button onClick={() => exportPdf(selectedRows)}>Export PDF</button>
           <button>Archive</button>
           <button className="close-bulk" onClick={() => setSelected([])}>
             <X />
@@ -220,15 +374,19 @@ function SchoolsPage({
                 <th>
                   Ownership <ChevronDown />
                 </th>
-                <th>
-                  Gender <ChevronDown />
-                </th>
-                <th>
-                  Boarding <ChevronDown />
-                </th>
-                <th>
-                  Ward <ChevronDown />
-                </th>
+                {columns && (
+                  <>
+                    <th>
+                      Gender <ChevronDown />
+                    </th>
+                    <th>
+                      Boarding <ChevronDown />
+                    </th>
+                    <th>
+                      Ward <ChevronDown />
+                    </th>
+                  </>
+                )}
                 <th>Status</th>
                 <th className="action-col"></th>
               </tr>
@@ -271,9 +429,13 @@ function SchoolsPage({
                       {s.ownershipType.replaceAll("_", " ")}
                     </span>
                   </td>
-                  <td>{displayValue(s.genderType)}</td>
-                  <td>{s.boardingType.replaceAll("_", " ")}</td>
-                  <td>{displayValue(s.ward)}</td>
+                  {columns && (
+                    <>
+                      <td>{displayValue(s.genderType)}</td>
+                      <td>{s.boardingType.replaceAll("_", " ")}</td>
+                      <td>{displayValue(s.ward)}</td>
+                    </>
+                  )}
                   <td>
                     <StatusBadge status={s.isActive ? "Active" : "Inactive"} />
                   </td>

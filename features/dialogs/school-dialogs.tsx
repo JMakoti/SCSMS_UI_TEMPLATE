@@ -136,9 +136,12 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
     resolver: zodResolver(addSchoolSchema),
     defaultValues: {
       institutionType: "Regular",
+      registrationStatus: "REGISTERED",
+      level: "Primary",
       ownershipType: "Goverment",
       genderType: "MIXED",
       boardingType: "DAY",
+      titleDeed: "NO",
       county: "Kilifi",
       subCounty: "Rabai",
       ward: "Mwawesa",
@@ -179,11 +182,17 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
               <div className="form-grid">
                 <label>
                   School code
-                  <input {...register("schoolCode")} placeholder="School Code" />
+                  <input
+                    {...register("schoolCode")}
+                    placeholder="School Code"
+                  />
                 </label>
                 <label>
                   UIC code
-                  <input {...register("uicCode")} placeholder="NEMIS/UIC Code" />
+                  <input
+                    {...register("uicCode")}
+                    placeholder="NEMIS/UIC Code"
+                  />
                 </label>
                 <label>
                   KNEC code
@@ -195,7 +204,10 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                 </label>
                 <label>
                   Registration Number
-                  <input {...register("regNumber")} placeholder="Registration Number" />
+                  <input
+                    {...register("regNumber")}
+                    placeholder="Registration Number"
+                  />
                 </label>
                 <label>
                   Official school name
@@ -223,13 +235,19 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                 </label>
                 <label>
                   Registration Status
-                  <select
-                    {...register("registrationStatus")}
-                  >
-                    <option value="REGISTERED">Public</option>
+                  <select {...register("registrationStatus")}>
+                    <option value="REGISTERED">Registered</option>
                     <option value="PENDING">Pending</option>
                     <option value="SUSPENDED">Suspended</option>
                     <option value="CLOSED">Closed</option>
+                  </select>
+                </label>
+                <label>
+                  Level
+                  <select {...register("level")}>
+                    <option value="Primary">Primary</option>
+                    <option value="Junior_Secondary">Junior Secondary</option>
+                    <option value="Senior_School">Senior School</option>
                   </select>
                 </label>
                 <label>
@@ -255,6 +273,13 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                     <option value="DAY">Day</option>
                     <option value="BOARDING">Boarding</option>
                     <option value="DAY_AND_BOARDING">Day and boarding</option>
+                  </select>
+                </label>
+                <label>
+                  Title deed
+                  <select {...register("titleDeed")}>
+                    <option value="NO">No</option>
+                    <option value="YES">Yes</option>
                   </select>
                 </label>
               </div>
@@ -326,7 +351,6 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                   <select {...register("sne")}>
                     <option value="NO">No</option>
                     <option value="YES">Yes</option>
-                   
                   </select>
                 </label>
                 <label>

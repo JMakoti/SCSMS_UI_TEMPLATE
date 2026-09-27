@@ -4,13 +4,13 @@ import { useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
-  Download,
   Search,
   UserCog,
   Users,
 } from "lucide-react";
 import { staffRecords } from "@/seeders/staff";
 import StatusBadge from "@/features/ui/status-badge";
+import { ExportMenu } from "@/features/ui/export-menu";
 
 type StaffContentProps = {
   variant?: "page" | "school-profile";
@@ -174,12 +174,18 @@ export function StaffContent({ variant = "page" }: StaffContentProps) {
               information
             </p>
           </div>
-          <button
-            className="outline-button"
-            onClick={() => window.alert("Staff export prepared")}
-          >
-            <Download /> Export
-          </button>
+          <ExportMenu
+            title="Staff records"
+            filename="staff-records"
+            headers={["Staff member", "Role", "Category", "Contact", "Status"]}
+            rows={filteredRecords.map((record) => [
+              record.name,
+              record.role,
+              record.type,
+              record.phone,
+              record.status,
+            ])}
+          />
         </div>
         <label className="module-search" htmlFor="staff-record-search">
           <Search aria-hidden="true" />

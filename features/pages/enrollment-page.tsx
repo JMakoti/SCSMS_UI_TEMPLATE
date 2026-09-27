@@ -5,7 +5,6 @@ import {
   BookOpen,
   Check,
   ChevronRight,
-  Download,
   School,
   Search,
   Users,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import { useAcademicYear } from "@/features/academic-years/academic-year-context";
 import PageHeader from "@/features/ui/page-header";
+import { ExportMenu } from "@/features/ui/export-menu";
 import {
   enrollmentGradeBands,
   enrollmentGradeRows,
@@ -73,12 +73,17 @@ export function GradeEnrollmentPage({
           </p>
         </div>
         <div className="grade-page-actions">
-          <button
-            className="outline-button"
-            onClick={() => window.alert(`Export prepared for ${grade}`)}
-          >
-            <Download /> Export
-          </button>
+          <ExportMenu
+            title={`${grade} enrollment`}
+            filename={`${grade.toLowerCase().replaceAll(" ", "-")}-enrollment`}
+            headers={["School", "Boys", "Girls", "Total learners"]}
+            rows={schools.map(([school, boys, girls]) => [
+              school,
+              boys,
+              girls,
+              Number(boys) + Number(girls),
+            ])}
+          />
         </div>
       </div>
       <section className="panel grade-enrollment-panel">
@@ -263,12 +268,28 @@ export function EnrollmentContent({
                 placeholder="Search schools"
               />
             </label>
-            <button
-            className="outline-button"
-            onClick={() => window.alert("Enrollment export prepared")}
-          >
-            <Download /> Export
-            </button>
+            <ExportMenu
+              title="School enrollment register"
+              filename="school-enrollment-register"
+              headers={[
+                "School",
+                "School type",
+                "Coverage",
+                "Learners",
+                "Updated",
+              ]}
+              rows={filteredEnrollmentRows.map((row) => [
+                row.school,
+                row.type,
+                row.type === "Primary"
+                  ? "PP1-PP3 / Grade 1-6"
+                  : row.type === "Junior"
+                    ? "Grade 7-9"
+                    : "Grade 10-13",
+                row.total,
+                row.updated,
+              ])}
+            />
           </div>
         </div>
         <div className="enrollment-table">
@@ -286,37 +307,38 @@ export function EnrollmentContent({
             </p>
           ) : (
             filteredEnrollmentRows.map((row) => (
-            <button
-              className="enrollment-row"
-              key={row.school}
-              onClick={() => onDetail?.(row.school)}
-            >
-              <span className="enrollment-school">
-                <span className="school-mini-icon">
-                  <School />
+              <button
+                className="enrollment-row"
+                key={row.school}
+                onClick={() => onDetail?.(row.school)}
+              >
+                <span className="enrollment-school">
+                  <span className="school-mini-icon">
+                    <School />
+                  </span>
+                  <strong>{row.school}</strong>
                 </span>
-                <strong>{row.school}</strong>
-              </span>
-              <span>{row.type}</span>
-              <span className="coverage-pills">
-                {(row.type === "Primary"
-                  ? bands.filter(
-                      (band) =>
-                        band.label === "PP1-PP3" || band.label === "Grade 1-6",
-                    )
-                  : row.type === "Junior"
-                    ? bands.filter((band) => band.label === "Grade 7-9")
-                    : bands.filter((band) => band.label === "Grade 10-13")
-                ).map((band) => (
-                  <i key={band.label}>{band.label}</i>
-                ))}
-              </span>
-              <strong className="enrollment-total">
-                {row.total.toLocaleString()}
-              </strong>
-              <span>{row.updated}</span>
-              <ChevronRight />
-            </button>
+                <span>{row.type}</span>
+                <span className="coverage-pills">
+                  {(row.type === "Primary"
+                    ? bands.filter(
+                        (band) =>
+                          band.label === "PP1-PP3" ||
+                          band.label === "Grade 1-6",
+                      )
+                    : row.type === "Junior"
+                      ? bands.filter((band) => band.label === "Grade 7-9")
+                      : bands.filter((band) => band.label === "Grade 10-13")
+                  ).map((band) => (
+                    <i key={band.label}>{band.label}</i>
+                  ))}
+                </span>
+                <strong className="enrollment-total">
+                  {row.total.toLocaleString()}
+                </strong>
+                <span>{row.updated}</span>
+                <ChevronRight />
+              </button>
             ))
           )}
         </div>

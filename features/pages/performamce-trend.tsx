@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import StatusBadge from "../ui/status-badge";
 
 type AssessmentKey = "KCSE" | "KJSEA" | "KPSEA";
@@ -69,8 +69,7 @@ function MultiLineChart({
 
   const years = datasets[0].years;
 
-  const x = (i: number) =>
-    padding.left + (i / (years.length - 1)) * innerW;
+  const x = (i: number) => padding.left + (i / (years.length - 1)) * innerW;
 
   const y = (v: number) =>
     padding.top + innerH - ((v - yMin) / (yMax - yMin)) * innerH;
@@ -132,9 +131,7 @@ function MultiLineChart({
 
       {/* One line per dataset */}
       {datasets.map((ds) => {
-        const points = ds.scores
-          .map((s, i) => `${x(i)},${y(s)}`)
-          .join(" ");
+        const points = ds.scores.map((s, i) => `${x(i)},${y(s)}`).join(" ");
         return (
           <g key={ds.key}>
             <polyline
@@ -219,8 +216,7 @@ function TrendCard({
           <h3>{config.fullName}</h3>
         </div>
         <span className="trend-card-delta trend-up">
-          <TrendingUp />
-          +{pct}%
+          <TrendingUp />+{pct}%
         </span>
       </div>
 
@@ -245,11 +241,8 @@ function TrendCard({
           const pRange = pMax - pMin || 1;
           const x = (i: number) =>
             pad.left + (i / (config.years.length - 1)) * iw;
-          const y = (v: number) =>
-            pad.top + ih - ((v - pMin) / pRange) * ih;
-          const line = config.scores
-            .map((s, i) => `${x(i)},${y(s)}`)
-            .join(" ");
+          const y = (v: number) => pad.top + ih - ((v - pMin) / pRange) * ih;
+          const line = config.scores.map((s, i) => `${x(i)},${y(s)}`).join(" ");
           const area = [
             `${x(0)},${pad.top + ih}`,
             ...config.scores.map((s, i) => `${x(i)},${y(s)}`),
@@ -359,8 +352,7 @@ export function PerformanceTrends() {
                 <span>{a.label} latest</span>
                 <strong>
                   {last}
-                  {unit}{" "}
-                  <em className="trend-inline-up">+{pct}%</em>
+                  {unit} <em className="trend-inline-up">+{pct}%</em>
                 </strong>
               </div>
             );
@@ -408,7 +400,8 @@ export function PerformanceTrends() {
                   display: "inline-block",
                 }}
               />
-              {a.label} {a.unit ? `(${a.unit === "%" ? "%" : "score"})` : "(mean score)"}
+              {a.label}{" "}
+              {a.unit ? `(${a.unit === "%" ? "%" : "score"})` : "(mean score)"}
             </div>
           ))}
         </div>
@@ -437,15 +430,17 @@ export function PerformanceTrends() {
         </div>
 
         <dl className="detail-list report-detail-list">
-          {active.years.map((year, i) => [
-            `${year} mean score`,
-            `${active.scores[i]}${active.unit ?? ""}`,
-          ]).map(([label, value]) => (
-            <div key={label}>
-              <dt>{label}</dt>
-              <dd>{value}</dd>
-            </div>
-          ))}
+          {active.years
+            .map((year, i) => [
+              `${year} mean score`,
+              `${active.scores[i]}${active.unit ?? ""}`,
+            ])
+            .map(([label, value]) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
           {[
             [
               "Overall change",

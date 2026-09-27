@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   BookOpen,
   Building2,
-  Download,
   FileBarChart2,
   Gauge,
   MapPinned,
@@ -25,6 +24,7 @@ import {
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
 import { staffRecords } from "@/seeders/staff";
+import { ExportMenu } from "@/features/ui/export-menu";
 
 export function RecordDetail({
   active,
@@ -321,12 +321,12 @@ export function RecordDetail({
           </div>
         </div>
         <div className="profile-actions">
-          <button
-            className="outline-button"
-            onClick={() => window.alert("Export prepared for download")}
-          >
-            <Download /> Export
-          </button>
+          <ExportMenu
+            title={`${active} - ${item}`}
+            filename={`${active.toLowerCase().replaceAll(" ", "-")}-detail`}
+            headers={["Field", "Value"]}
+            rows={fields.map(([label, value]) => [label, value])}
+          />
           {active !== "Enrollment" && (
             <Button
               className="edit-record-button"

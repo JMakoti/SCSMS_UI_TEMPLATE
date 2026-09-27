@@ -17,7 +17,6 @@ import {
   ChevronRight,
   ClipboardCheck,
   Database,
-  Download,
   FileBarChart2,
   FileSpreadsheet,
   FileText,
@@ -43,6 +42,7 @@ import {
   rabaiSchoolYears,
 } from "@/seeders/rabai-schools";
 import { getReportDetail } from "@/seeders/reports";
+import { ExportMenu } from "@/features/ui/export-menu";
 
 function WardSchoolsTab({ ward }: { ward: string }) {
   const { currentAcademicYear } = useAcademicYear();
@@ -51,18 +51,18 @@ function WardSchoolsTab({ ward }: { ward: string }) {
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const filteredSchools = normalizedQuery
     ? wardSchools.filter((school) =>
-      [
-        school.displayName,
-        school.schoolCode,
-        school.institutionType,
-        school.ownershipType,
-        school.location,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedQuery),
-    )
+        [
+          school.displayName,
+          school.schoolCode,
+          school.institutionType,
+          school.ownershipType,
+          school.location,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(normalizedQuery),
+      )
     : wardSchools;
 
   return (
@@ -138,7 +138,6 @@ function getReportIcon(reportKey: string) {
     "ward-summary": MapPin,
     "school-type": FileSpreadsheet,
     "data-quality": AlertTriangle,
-
   };
 
   return icons[reportKey as keyof typeof icons] ?? FileText;
@@ -300,8 +299,16 @@ function ReportPreviewBody({
 
 function TrendsTab({ school }: { school: string }) {
   const assessment = getSchoolAssessment(school);
-  const values = assessment === "KCSE" ? [6.4, 6.7, 7, 7.3] : assessment === "KJSEA" ? [57, 61, 65, 69] : [60, 64, 68, 72];
-  const chartData = values.map((mean, index) => ({ year: String(2023 + index), mean }));
+  const values =
+    assessment === "KCSE"
+      ? [6.4, 6.7, 7, 7.3]
+      : assessment === "KJSEA"
+        ? [57, 61, 65, 69]
+        : [60, 64, 68, 72];
+  const chartData = values.map((mean, index) => ({
+    year: String(2023 + index),
+    mean,
+  }));
 
   return (
     <section className="panel detail-panel performance-overview performance-overview-light">
@@ -315,7 +322,9 @@ function TrendsTab({ school }: { school: string }) {
             <h3>Mean score by year</h3>
             <p>Historical {assessment} examination performance</p>
           </div>
-          <span className="trend-axis-note">Y-axis: Mean score · X-axis: Exam year</span>
+          <span className="trend-axis-note">
+            Y-axis: Mean score · X-axis: Exam year
+          </span>
         </div>
         <div className="trend-chart-shell">
           <div className="trend-chart-legend">
@@ -324,10 +333,28 @@ function TrendsTab({ school }: { school: string }) {
           </div>
           <div className="h-[300px] w-full px-2 py-5">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 12, right: 18, left: 4, bottom: 8 }}>
-                <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="4 4" />
-                <XAxis dataKey="year" tickLine={false} axisLine={false} tickMargin={10} />
-                <YAxis domain={assessment === "KCSE" ? [6, 8] : [50, 80]} tickLine={false} axisLine={false} tickMargin={8} width={42} />
+              <LineChart
+                data={chartData}
+                margin={{ top: 12, right: 18, left: 4, bottom: 8 }}
+              >
+                <CartesianGrid
+                  vertical={false}
+                  stroke="var(--border)"
+                  strokeDasharray="4 4"
+                />
+                <XAxis
+                  dataKey="year"
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={10}
+                />
+                <YAxis
+                  domain={assessment === "KCSE" ? [6, 8] : [50, 80]}
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={8}
+                  width={42}
+                />
                 <Tooltip
                   cursor={{
                     stroke: "var(--chart-3)",
@@ -335,7 +362,24 @@ function TrendsTab({ school }: { school: string }) {
                   }}
                   formatter={(value) => [value ?? 0, "Mean score"]}
                 />
-                <Line dataKey="mean" type="monotone" stroke="var(--chart-2)" strokeWidth={3} dot={{ r: 5, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} activeDot={{ r: 7, fill: "var(--chart-1)", stroke: "var(--chart-2)", strokeWidth: 2 }} />
+                <Line
+                  dataKey="mean"
+                  type="monotone"
+                  stroke="var(--chart-2)"
+                  strokeWidth={3}
+                  dot={{
+                    r: 5,
+                    fill: "var(--chart-1)",
+                    stroke: "var(--chart-2)",
+                    strokeWidth: 2,
+                  }}
+                  activeDot={{
+                    r: 7,
+                    fill: "var(--chart-1)",
+                    stroke: "var(--chart-2)",
+                    strokeWidth: 2,
+                  }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -380,9 +424,14 @@ function ReportInformationTab({ report }: { report: string }) {
             <button>
               <RefreshCw /> Refresh
             </button>
-            <button>
-              <Download /> Export
-            </button>
+            <ExportMenu
+              title={detail.title}
+              filename={`${detail.key}-report`}
+              headers={detail.previewColumns.slice(0, 5)}
+              rows={getReportPreviewRows(detail.key).map((row) =>
+                row.slice(0, 5),
+              )}
+            />
             <button>
               <Printer /> Print
             </button>
@@ -426,7 +475,10 @@ export function DetailTabs({
   const [term, setTerm] = useState("Term 1");
   const assessmentTab = getSchoolAssessment(item);
   useEffect(() => {
-    if (active === "School Performance" && !["Overview", assessmentTab, "Trends"].includes(tab)) {
+    if (
+      active === "School Performance" &&
+      !["Overview", assessmentTab, "Trends"].includes(tab)
+    ) {
       setTab("Overview");
     }
   }, [active, assessmentTab, tab]);
@@ -470,7 +522,11 @@ export function DetailTabs({
       )}
       {active === "School Performance" &&
         (tab === "Overview" || tab === assessmentTab) && (
-          <PerformanceContent detail school={item} overview={tab === "Overview"} />
+          <PerformanceContent
+            detail
+            school={item}
+            overview={tab === "Overview"}
+          />
         )}
 
       {tab === "Schools" && active === "Ward" && <WardSchoolsTab ward={item} />}
