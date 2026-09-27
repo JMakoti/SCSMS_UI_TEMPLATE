@@ -21,6 +21,7 @@ export function Topbar({
     window.location.hash = "profile";
     window.dispatchEvent(new Event("scsms-profile"));
   },
+  onMenu,
   onLogout,
 }: {
   onSearch: () => void;
@@ -29,6 +30,7 @@ export function Topbar({
   onTheme: () => void;
   user: { email: string };
   onProfile?: () => void;
+  onMenu?: () => void;
   onLogout?: () => void;
 }) {
   const emailName = user.email.split("@")[0] ?? "user";
@@ -41,7 +43,12 @@ export function Topbar({
 
   return (
     <header className="topbar">
-      <button className="mobile-menu">
+      <button
+        className="mobile-menu"
+        type="button"
+        onClick={onMenu}
+        aria-label="Open navigation menu"
+      >
         <Menu />
       </button>
       <button className="global-search" onClick={onSearch}>

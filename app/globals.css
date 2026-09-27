@@ -636,6 +636,25 @@
   .dark-theme .sync-copy strong {
     color: #dbeafe;
   }
+  .dark-theme .academic-year-selector,
+  .dark-theme .academic-year-transition-button {
+    border-color: #30445e;
+    background: #142338;
+  }
+  .dark-theme .academic-year-selector select {
+    color: #e2e8f0;
+  }
+  .dark-theme .academic-year-selector small,
+  .dark-theme .academic-year-selector svg {
+    color: #9aaac0;
+  }
+  .dark-theme .academic-year-transition-button {
+    color: #93c5fd;
+  }
+  .dark-theme .academic-year-transition-button:hover {
+    border-color: #3b82f6;
+    background: #172a42;
+  }
   .dark-theme .page-header h1 {
     color: #e2e8f0;
   }
@@ -2235,20 +2254,31 @@ kbd {
   align-items: center;
   gap: 20px;
 }
+.academic-year-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
 .academic-year-selector {
   display: inline-grid;
   grid-template-columns: 1fr 16px;
   align-items: center;
-  min-width: 150px;
-  height: 35px;
+  min-width: 158px;
+  height: 42px;
   border: 1px solid #dbe3ef;
   border-radius: 6px;
   background: #fff;
   padding: 4px 8px;
   color: #475569;
 }
-.academic-year-selector span {
-  grid-column: 1 / -1;
+.academic-year-selector > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+.academic-year-selector small {
   color: #94a3b8;
   font-size: 8px;
   font-weight: 800;
@@ -2270,6 +2300,34 @@ kbd {
   height: 14px;
   color: #64748b;
   pointer-events: none;
+}
+.academic-year-transition-button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #dbe3ef;
+  border-radius: 6px;
+  background: #fff;
+  color: #1d4ed8;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.academic-year-transition-button:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+.academic-year-transition-button svg {
+  width: 16px;
+  height: 16px;
+}
+.academic-year-dialog {
+  width: min(100%, 560px);
+}
+.form-error {
+  margin: 12px 0 0;
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 700;
 }
 .sync-pill,
 .icon-button {
@@ -7584,5 +7642,518 @@ tbody tr:hover {
   .enrollment-filters select {
     min-width: 0;
     flex: 1;
+  }
+}
+
+/* Final responsive guardrails for dense admin screens. */
+.app,
+.app-main,
+.content,
+.panel,
+.table-panel {
+  min-width: 0;
+}
+
+.table-scroll,
+.enrollment-table,
+.detail-enrollment-table,
+.grade-school-table,
+.staff-table,
+.school-staff-table,
+.infrastructure-table {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.profile-tabs,
+.term-cards,
+.page-buttons,
+.pages,
+.toolbar-right,
+.profile-actions,
+.infrastructure-actions,
+.report-toolbar-actions,
+.enrollment-register-actions {
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .stats-grid,
+  .quality-records-grid,
+  .report-stat-grid,
+  .detail-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-grid,
+  .bottom-grid,
+  .profile-grid,
+  .profile-insight-row,
+  .school-contacts-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .profile-grid:has(.detail-panel:only-child) .detail-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .page-header,
+  .toolbar,
+  .panel-header,
+  .profile-head,
+  .sync-hero,
+  .grade-page-header,
+  .enrollment-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .toolbar-left,
+  .toolbar-right,
+  .profile-actions,
+  .infrastructure-actions,
+  .report-toolbar-actions,
+  .enrollment-register-actions,
+  .grade-page-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-right > *,
+  .profile-actions > *,
+  .infrastructure-actions > *,
+  .report-toolbar-actions > *,
+  .enrollment-register-actions > * {
+    flex: 1 1 150px;
+  }
+
+  .filter-menu-wrap,
+  .filter-menu-wrap > button,
+  .toolbar-right .outline-button,
+  .profile-actions .outline-button,
+  .profile-actions .edit-school-button,
+  .profile-actions .danger-button,
+  .infrastructure-actions .outline-button,
+  .infrastructure-actions .edit-school-button {
+    min-width: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .school-filter-menu {
+    left: 0;
+    right: 0;
+    min-width: 100%;
+  }
+
+  .table-search,
+  .compact-search,
+  .module-search,
+  .enrollment-search {
+    width: 100%;
+  }
+
+  .profile-tabs {
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+  }
+
+  .profile-tabs button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .module-row,
+  .sync-row,
+  .school-contact-heading {
+    align-items: flex-start;
+  }
+
+  .module-row {
+    flex-wrap: wrap;
+  }
+
+  .row-action {
+    margin-left: 41px;
+  }
+}
+
+@media (max-width: 640px) {
+  .content {
+    padding: 18px 12px 70px;
+  }
+
+  .topbar {
+    min-width: 0;
+  }
+
+  .global-search {
+    min-width: 0;
+  }
+
+  .global-search span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .academic-year-switcher {
+    width: 100%;
+  }
+
+  .academic-year-selector,
+  .dashboard-year-select {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .page-header h1,
+  .profile-title h1 {
+    overflow-wrap: anywhere;
+  }
+
+  .form-dialog,
+  .search-dialog {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+  }
+
+  .overlay {
+    align-items: start;
+    padding: 12px;
+    place-items: start center;
+  }
+
+  .dialog-head,
+  .dialog-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .dialog-head,
+  .dialog-footer,
+  .table-meta,
+  .pagination,
+  .bulk-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dialog-footer button,
+  .dialog-footer .modal-primary-button,
+  .bulk-bar button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-section {
+    padding: 16px;
+  }
+
+  .form-grid,
+  .detail-list,
+  .profile-grid:has(.detail-panel:only-child) .detail-list,
+  .quality-breakdown,
+  .detail-stat-grid,
+  .report-stat-grid,
+  .grade-band-grid,
+  .school-contacts-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .stat-card,
+  .detail-stat-grid > div {
+    min-width: 0;
+  }
+
+  .pagination > span {
+    display: block;
+  }
+
+  .pages,
+  .page-buttons {
+    flex-wrap: wrap;
+  }
+
+  .subject-combinations-panel,
+  .detail-panel,
+  .stats-detail,
+  .gender-detail,
+  .completeness-detail,
+  .module-table,
+  .sync-table,
+  .staff-record-panel,
+  .infrastructure-panel,
+  .infrastructure-projects-panel {
+    padding: 14px;
+  }
+
+  .subject-combinations-panel .panel-header {
+    padding: 0 0 12px;
+  }
+
+  .school-contact-heading,
+  .project-inline-form,
+  .contact-page-action {
+    flex-direction: column;
+  }
+
+  .school-contact-card-actions,
+  .project-inline-actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .content {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .stats-grid,
+  .detail-stat-grid,
+  .grade-band-grid,
+  .enrollment-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .toolbar-right > *,
+  .profile-actions > *,
+  .infrastructure-actions > *,
+  .report-toolbar-actions > *,
+  .enrollment-register-actions > * {
+    flex-basis: 100%;
+  }
+
+  .outline-button,
+  .edit-school-button,
+  .danger-button {
+    min-height: 36px;
+    white-space: normal;
+  }
+
+  .top-actions {
+    gap: 3px;
+  }
+
+  .statusbar {
+    left: 68px;
+    overflow: hidden;
+  }
+
+  .statusbar > span:not(:first-child):not(.statusbar-spacer) {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .mobile-nav-backdrop {
+    z-index: 90;
+  }
+
+  .mobile-nav-open .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 100;
+    width: min(82vw, 270px) !important;
+    transform: translateX(0) !important;
+    pointer-events: auto;
+  }
+
+  .mobile-nav-open .sidebar .brand {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    height: 70px;
+    min-width: 0;
+    padding: 14px 14px 14px 16px;
+  }
+
+  .mobile-nav-open .sidebar .brand-mark {
+    width: 36px;
+    height: 36px;
+    flex: 0 0 36px;
+  }
+
+  .mobile-nav-open .sidebar .brand-copy {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+  }
+
+  .mobile-nav-open .sidebar .brand-name,
+  .mobile-nav-open .sidebar .brand-sub {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-nav-open .sidebar .mobile-nav-close {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin-left: auto;
+    flex: 0 0 34px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.08);
+  }
+
+  .mobile-nav-open .sidebar .mobile-nav-close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .mobile-nav-open .sidebar .nav-item {
+    justify-content: flex-start;
+  }
+
+  .mobile-nav-open .sidebar .brand-copy,
+  .mobile-nav-open .sidebar .nav-item span,
+  .mobile-nav-open .sidebar .collapse-button span {
+    display: inline-flex;
+  }
+
+  .mobile-nav-open .sidebar .nav-label {
+    display: block;
+  }
+
+  .mobile-nav-open .sidebar .nav-count {
+    display: grid;
+  }
+}
+
+/* Enrollment register responsive tuning. */
+.enrollment-panel,
+.enrollment-table,
+.detail-enrollment-table,
+.grade-school-table {
+  min-width: 0;
+}
+
+.enrollment-table,
+.detail-enrollment-table,
+.grade-school-table {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.enrollment-table-head,
+.enrollment-row {
+  min-width: 760px;
+}
+
+.detail-enrollment-head,
+.detail-enrollment-row,
+.grade-school-head,
+.grade-school-row {
+  min-width: 520px;
+}
+
+.enrollment-school,
+.coverage-pills {
+  min-width: 0;
+}
+
+.enrollment-school strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 800px) {
+  .enrollment-panel .panel-header,
+  .enrollment-detail-header,
+  .grade-table-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .enrollment-register-actions {
+    width: 100%;
+  }
+
+  .enrollment-search {
+    min-width: 0;
+    flex: 1 1 220px;
+  }
+
+  .enrollment-table {
+    min-width: 0;
+    padding: 0 6px 8px;
+  }
+
+  .enrollment-table-head,
+  .enrollment-row {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .enrollment-detail-summary,
+  .grade-table-summary {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 560px) {
+  .enrollment-panel .panel-header,
+  .enrollment-detail-header,
+  .grade-table-header {
+    padding: 16px;
+  }
+
+  .enrollment-register-actions {
+    gap: 8px;
+  }
+
+  .enrollment-register-actions > *,
+  .enrollment-register-actions .filter-menu-wrap,
+  .enrollment-register-actions .outline-button {
+    width: 100%;
+  }
+
+  .enrollment-search {
+    flex-basis: 100%;
+  }
+
+  .enrollment-table-head,
+  .enrollment-row {
+    min-width: 680px;
+    grid-template-columns: 220px 105px 170px 78px 78px 18px;
+    gap: 10px;
+    padding: 12px 10px;
+  }
+
+  .detail-enrollment-head,
+  .detail-enrollment-row,
+  .grade-school-head,
+  .grade-school-row {
+    min-width: 460px;
+    gap: 10px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .coverage-pills i {
+    padding: 4px 6px;
   }
 }

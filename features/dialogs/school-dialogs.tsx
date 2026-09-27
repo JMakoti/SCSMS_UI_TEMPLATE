@@ -9,6 +9,15 @@ import type {
   AddContactFormValues,
   AddSchoolFormValues,
 } from "@/features/types/forms";
+import {
+  schoolBoardingOptions,
+  schoolClassificationOptions,
+  schoolGenderOptions,
+  schoolLevelOptions,
+  schoolOwnershipOptions,
+  schoolRegistrationStatusOptions,
+  schoolTitleDeedOptions,
+} from "@/features/schools/school-display";
 import { rabaiSchools, rabaiWards } from "@/seeders/rabai-schools";
 import { Check, X } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -227,59 +236,71 @@ export function AddSchoolDialog({ onClose }: { onClose: () => void }) {
                 <label>
                   Institution type
                   <select {...register("institutionType")}>
-                    <option value="Regular">Regular</option>
-                    <option value="Intergrated">Intergrated</option>
-                    <option value="Special_Needs">Special Needs</option>
-                    <option value="Comprehensive">Comprehensive</option>
+                    {schoolClassificationOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
                   Registration Status
                   <select {...register("registrationStatus")}>
-                    <option value="REGISTERED">Registered</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="SUSPENDED">Suspended</option>
-                    <option value="CLOSED">Closed</option>
+                    {schoolRegistrationStatusOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
                   Level
                   <select {...register("level")}>
-                    <option value="Primary">Primary</option>
-                    <option value="Junior_Secondary">Junior Secondary</option>
-                    <option value="Senior_School">Senior School</option>
+                    {schoolLevelOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
                   Ownership
                   <select {...register("ownershipType")}>
-                    <option value="Goverment">Goverment</option>
-                    <option value="Private">Private</option>
-                    <option value="Community">Community</option>
-                    <option value="NGO/Organization">NGO/Organization</option>
+                    {schoolOwnershipOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
                   Gender
                   <select {...register("genderType")}>
-                    <option value="MIXED">Mixed</option>
-                    <option value="BOYS">Boys</option>
-                    <option value="GIRLS">Girls</option>
+                    {schoolGenderOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
                   Boarding
                   <select {...register("boardingType")}>
-                    <option value="DAY">Day</option>
-                    <option value="BOARDING">Boarding</option>
-                    <option value="DAY_AND_BOARDING">Day and boarding</option>
+                    {schoolBoardingOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
                   Title deed
                   <select {...register("titleDeed")}>
-                    <option value="NO">No</option>
-                    <option value="YES">Yes</option>
+                    {schoolTitleDeedOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </label>
               </div>

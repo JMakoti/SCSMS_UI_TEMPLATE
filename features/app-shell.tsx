@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 import Sidebar from "@/features/navigation/sidebar";
 import Topbar from "@/features/navigation/topbar";
@@ -20,10 +20,12 @@ type EditDialogState = {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [sessionUser, setSessionUser] = useState<{ email: string } | null>(
     null,
   );
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [dialog, setDialog] = useState<string | null>(null);
   const [editDialog, setEditDialog] = useState<EditDialogState | null>(null);
   const [dark, setDark] = useState(false);
@@ -31,6 +33,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     setDark(localStorage.getItem("scsms-theme") === "dark");
   }, []);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const handleKeyboardShortcut = (event: KeyboardEvent) => {
@@ -77,8 +83,22 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <AcademicYearProvider>
-      <div className={`app ${dark ? "dark-theme" : ""}`}>
-        <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <div
+        className={`app ${dark ? "dark-theme" : ""} ${
+          mobileNavOpen ? "mobile-nav-open" : ""
+        }`}
+      >
+        <button
+          className="mobile-nav-backdrop"
+          type="button"
+          onClick={() => setMobileNavOpen(false)}
+          aria-label="Close navigation menu"
+        />
+        <Sidebar
+          collapsed={mobileNavOpen ? false : collapsed}
+          setCollapsed={setCollapsed}
+          onCloseMobile={() => setMobileNavOpen(false)}
+        />
         <div className="app-main">
           <Topbar
             onSearch={() => setDialog("search")}
@@ -86,6 +106,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             dark={dark}
             onTheme={toggleTheme}
             user={sessionUser}
+            onMenu={() => setMobileNavOpen(true)}
             onProfile={() => router.push("/profile")}
             onLogout={() => setSessionUser(null)}
           />

@@ -22,6 +22,20 @@ import type { z } from "zod";
 import StatusBadge from "@/features/ui/status-badge";
 import PageHeader from "@/features/ui/page-header";
 import { schoolRegistryFilterSchema } from "@/features/schemas/school-registry-filter-schema";
+import {
+  formatSchoolBoarding,
+  formatSchoolClassification,
+  formatSchoolGender,
+  formatSchoolLevel,
+  formatSchoolOwnership,
+  formatSchoolRegistrationStatus,
+  formatSchoolTitleDeed,
+  getSchoolClassification,
+  getSchoolLevel,
+  getSchoolOwnership,
+  getSchoolRegistrationStatus,
+  getSchoolTitleDeed,
+} from "@/features/schools/school-display";
 
 function SchoolsPage({
   onAdd,
@@ -65,7 +79,7 @@ function SchoolsPage({
         .filter(
           (s) =>
             (filter === "All" || s.institutionType === filter) &&
-            `${s.displayName} ${s.officialName} ${s.schoolCode ?? ""} ${s.ward ?? ""}`
+            `${s.displayName} ${s.officialName} ${s.schoolCode ?? ""} ${s.ward ?? ""} ${formatSchoolClassification(getSchoolClassification(s))} ${formatSchoolLevel(getSchoolLevel(s))} ${formatSchoolOwnership(getSchoolOwnership(s))} ${formatSchoolRegistrationStatus(getSchoolRegistrationStatus(s))}`
               .toLowerCase()
               .includes(query.toLowerCase()),
         ),
@@ -96,10 +110,13 @@ function SchoolsPage({
       "School Code",
       "School Name",
       "Official Name",
-      "Type",
+      "Institution Type",
+      "Registration Status",
+      "Level",
       "Ownership",
       "Gender",
       "Boarding",
+      "Title Deed",
       "Ward",
       "Status",
     ];
@@ -107,10 +124,13 @@ function SchoolsPage({
       school.schoolCode ?? "",
       school.displayName,
       school.officialName,
-      school.institutionType.replaceAll("_", " "),
-      school.ownershipType.replaceAll("_", " "),
-      school.genderType ?? "",
-      school.boardingType.replaceAll("_", " "),
+      formatSchoolClassification(getSchoolClassification(school)),
+      formatSchoolRegistrationStatus(getSchoolRegistrationStatus(school)),
+      formatSchoolLevel(getSchoolLevel(school)),
+      formatSchoolOwnership(getSchoolOwnership(school)),
+      formatSchoolGender(school.genderType),
+      formatSchoolBoarding(school.boardingType),
+      formatSchoolTitleDeed(getSchoolTitleDeed()),
       school.ward ?? "",
       school.isActive ? "Active" : "Inactive",
     ]);
@@ -280,7 +300,7 @@ function SchoolsPage({
             </button>
             {filtersOpen && (
               <div className="school-filter-menu">
-                <span>Institution type</span>
+                <span>Level</span>
                 {schoolLevels.map((level) => (
                   <button
                     className={filter === level.value ? "selected" : ""}
@@ -365,7 +385,10 @@ function SchoolsPage({
                   School Name <ChevronDown />
                 </th>
                 <th>
-                  Type <ChevronDown />
+                  Institution type <ChevronDown />
+                </th>
+                <th>
+                  Level <ChevronDown />
                 </th>
                 <th>
                   Ownership <ChevronDown />
@@ -377,6 +400,12 @@ function SchoolsPage({
                     </th>
                     <th>
                       Boarding <ChevronDown />
+                    </th>
+                    <th>
+                      Registration Status <ChevronDown />
+                    </th>
+                    <th>
+                      Title deed <ChevronDown />
                     </th>
                     <th>
                       Ward <ChevronDown />
@@ -416,19 +445,30 @@ function SchoolsPage({
                       {s.displayName}
                     </button>
                   </td>
-                  <td>{s.institutionType.replaceAll("_", " ")}</td>
+                  <td>
+                    {formatSchoolClassification(getSchoolClassification(s))}
+                  </td>
+                  <td>{formatSchoolLevel(getSchoolLevel(s))}</td>
                   <td>
                     <span className="type-label">
                       <span
-                        className={`type-dot ${s.ownershipType.toLowerCase()}`}
+                        className={`type-dot ${getSchoolOwnership(s)
+                          .toLowerCase()
+                          .replace(/[^a-z0-9]+/g, "-")}`}
                       />
-                      {s.ownershipType.replaceAll("_", " ")}
+                      {formatSchoolOwnership(getSchoolOwnership(s))}
                     </span>
                   </td>
                   {columns && (
                     <>
-                      <td>{displayValue(s.genderType)}</td>
-                      <td>{s.boardingType.replaceAll("_", " ")}</td>
+                      <td>{formatSchoolGender(s.genderType)}</td>
+                      <td>{formatSchoolBoarding(s.boardingType)}</td>
+                      <td>
+                        {formatSchoolRegistrationStatus(
+                          getSchoolRegistrationStatus(s),
+                        )}
+                      </td>
+                      <td>{formatSchoolTitleDeed(getSchoolTitleDeed())}</td>
                       <td>{displayValue(s.ward)}</td>
                     </>
                   )}

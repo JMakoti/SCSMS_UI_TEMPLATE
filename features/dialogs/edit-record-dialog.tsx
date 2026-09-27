@@ -16,6 +16,20 @@ import {
   rabaiSchools,
   rabaiWards,
 } from "@/seeders/rabai-schools";
+import {
+  getSchoolClassification,
+  getSchoolLevel,
+  getSchoolOwnership,
+  getSchoolRegistrationStatus,
+  getSchoolTitleDeed,
+  schoolBoardingOptions,
+  schoolClassificationOptions,
+  schoolGenderOptions,
+  schoolLevelOptions,
+  schoolOwnershipOptions,
+  schoolRegistrationStatusOptions,
+  schoolTitleDeedOptions,
+} from "@/features/schools/school-display";
 import { staffRecords } from "@/seeders/staff";
 import { Check, X } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -136,12 +150,6 @@ export function EditRecordDialog({
 
   const getDefaultValue = (field: EditField) => {
     if (active === "Schools" && schoolInfo) {
-      const level =
-        schoolInfo.institutionType === "JUNIOR_SECONDARY"
-          ? "Junior_Secondary"
-          : schoolInfo.institutionType === "SENIOR_SECONDARY"
-            ? "Senior_School"
-            : "Primary";
       const values: Record<string, string> = {
         schoolCode: schoolInfo.schoolCode ?? "",
         uicCode: schoolInfo.uicCode ?? "",
@@ -150,14 +158,14 @@ export function EditRecordDialog({
         regNumber: "",
         officialName: schoolInfo.officialName,
         displayName: schoolInfo.displayName,
-        institutionType: schoolInfo.institutionType,
+        institutionType: getSchoolClassification(schoolInfo),
         sourceInstitutionType: schoolInfo.sourceInstitutionType ?? "",
-        registrationStatus: "REGISTERED",
-        level,
-        ownershipType: schoolInfo.ownershipType,
+        registrationStatus: getSchoolRegistrationStatus(schoolInfo),
+        level: getSchoolLevel(schoolInfo),
+        ownershipType: getSchoolOwnership(schoolInfo),
         genderType: schoolInfo.genderType,
         boardingType: schoolInfo.boardingType,
-        titleDeed: "NO",
+        titleDeed: getSchoolTitleDeed(),
         county: schoolInfo.county,
         subCounty: schoolInfo.subCounty,
         ward: schoolInfo.ward ?? "",
@@ -256,47 +264,13 @@ export function EditRecordDialog({
     string,
     { label: string; value: string }[]
   > = {
-    institutionType: [
-      { label: "Primary", value: "PRIMARY" },
-      { label: "Junior secondary", value: "JUNIOR_SECONDARY" },
-      { label: "Senior secondary", value: "SENIOR_SECONDARY" },
-      { label: "Integrated", value: "INTEGRATED" },
-      { label: "Other", value: "OTHER" },
-    ],
-    registrationStatus: [
-      { label: "Registered", value: "REGISTERED" },
-      { label: "Pending", value: "PENDING" },
-      { label: "Suspended", value: "SUSPENDED" },
-      { label: "Closed", value: "CLOSED" },
-    ],
-    level: [
-      { label: "Primary", value: "Primary" },
-      { label: "Junior Secondary", value: "Junior_Secondary" },
-      { label: "Senior School", value: "Senior_School" },
-    ],
-    ownershipType: [
-      { label: "Public", value: "PUBLIC" },
-      { label: "Private", value: "PRIVATE" },
-      { label: "Faith based", value: "FAITH_BASED" },
-      { label: "Other", value: "OTHER" },
-      { label: "Unknown", value: "UNKNOWN" },
-    ],
-    genderType: [
-      { label: "Mixed", value: "MIXED" },
-      { label: "Boys", value: "BOYS" },
-      { label: "Girls", value: "GIRLS" },
-      { label: "Unknown", value: "UNKNOWN" },
-    ],
-    boardingType: [
-      { label: "Day", value: "DAY" },
-      { label: "Boarding", value: "BOARDING" },
-      { label: "Day and boarding", value: "DAY_AND_BOARDING" },
-      { label: "Unknown", value: "UNKNOWN" },
-    ],
-    titleDeed: [
-      { label: "No", value: "NO" },
-      { label: "Yes", value: "YES" },
-    ],
+    institutionType: [...schoolClassificationOptions],
+    registrationStatus: [...schoolRegistrationStatusOptions],
+    level: [...schoolLevelOptions],
+    ownershipType: [...schoolOwnershipOptions],
+    genderType: [...schoolGenderOptions],
+    boardingType: [...schoolBoardingOptions],
+    titleDeed: [...schoolTitleDeedOptions],
     county: [{ label: "Kilifi", value: "Kilifi" }],
     subCounty: [{ label: "Rabai", value: "Rabai" }],
     ward: [

@@ -21,6 +21,7 @@ import {
   UserCog,
   Users,
   Gauge,
+  X,
 } from "lucide-react";
 import { moduleForPath } from "@/features/navigation/module-for-path";
 import { routeForModule } from "@/features/navigation/route-for-module";
@@ -69,11 +70,13 @@ export function Sidebar({
   setActive,
   collapsed,
   setCollapsed,
+  onCloseMobile,
 }: {
   active?: string;
   setActive?: (v: string) => void;
   collapsed: boolean;
   setCollapsed: (v: boolean) => void;
+  onCloseMobile?: () => void;
 }) {
   const pathname = usePathname();
   const current = active ?? moduleForPath(pathname);
@@ -84,12 +87,18 @@ export function Sidebar({
         <div className="brand-mark">
           <School />
         </div>
-        {!collapsed && (
-          <div>
-            <div className="brand-name">SC-SMS</div>
-            <div className="brand-sub">Sub-County Education Office</div>
-          </div>
-        )}
+        <div className="brand-copy">
+          <div className="brand-name">SC-SMS</div>
+          <div className="brand-sub">Sub-County Education Office</div>
+        </div>
+        <button
+          className="mobile-nav-close"
+          type="button"
+          onClick={onCloseMobile}
+          aria-label="Close navigation menu"
+        >
+          <X />
+        </button>
       </div>
       <div className="sidebar-scroll">
         {navGroups.map((group) => (
@@ -100,7 +109,10 @@ export function Sidebar({
                 key={label}
                 className={`nav-item ${current === label ? "active" : ""}`}
                 href={routeForModule(label)}
-                onClick={() => setActive?.(label)}
+                onClick={() => {
+                  setActive?.(label);
+                  onCloseMobile?.();
+                }}
                 title={collapsed ? label : undefined}
               >
                 <Icon />

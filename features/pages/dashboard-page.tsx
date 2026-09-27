@@ -2,7 +2,6 @@
 
 import {
   Building2,
-  CalendarDays,
   Check,
   ChevronDown,
   ChevronRight,
@@ -22,6 +21,7 @@ import {
   dashboardRecentActivities,
 } from "@/seeders/dashboard";
 import { useAcademicYear } from "@/features/academic-years/academic-year-context";
+import { AcademicYearSelector } from "@/features/academic-years/academic-year-selector";
 import { rabaiSchools, rabaiSchoolYears } from "@/seeders/rabai-schools";
 export function StatCard({
   icon: Icon,
@@ -132,8 +132,7 @@ export function DonutChart() {
 }
 
 function Dashboard({ setActive }: { setActive: (v: string) => void }) {
-  const { academicYears, currentAcademicYear, setCurrentAcademicYearId } =
-    useAcademicYear();
+  const { currentAcademicYear } = useAcademicYear();
   const activityIcons = { Pencil, Plus, Users, UserCog };
   const currentSchoolYears = rabaiSchoolYears.filter(
     (schoolYear) => schoolYear.academicYearId === currentAcademicYear.id,
@@ -168,28 +167,7 @@ function Dashboard({ setActive }: { setActive: (v: string) => void }) {
       <PageHeader
         title="Dashboard"
         description="Overview of schools, learners, staff and education infrastructure"
-        action={
-          <label className="date-chip dashboard-year-select">
-            <CalendarDays className="dashboard-year-icon" />
-            <span className="dashboard-year-copy">
-              <small>Academic Year</small>
-              <select
-                value={currentAcademicYear.id}
-                onChange={(event) =>
-                  setCurrentAcademicYearId(event.target.value)
-                }
-              >
-                {academicYears.map((year) => (
-                  <option key={year.id} value={year.id}>
-                    {year.name}
-                    {year.isClosed ? " - Closed" : " - Active"}
-                  </option>
-                ))}
-              </select>
-            </span>
-            <ChevronDown />
-          </label>
-        }
+        action={<AcademicYearSelector variant="dashboard" />}
       />
       <div className="status-banner">
         <div className="status-banner-icon">
@@ -277,7 +255,10 @@ function Dashboard({ setActive }: { setActive: (v: string) => void }) {
           <div className="panel-header">
             <div>
               <h2>Enrollment by Grade</h2>
-              <p>Total learners enrolled • Academic Year 2026</p>
+              <p>
+                Total learners enrolled - Academic Year{" "}
+                {currentAcademicYear.name}
+              </p>
             </div>
             <div className="chart-legend">
               <span>

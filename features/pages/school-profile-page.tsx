@@ -28,14 +28,25 @@ import { StaffContent } from "@/features/pages/staff-page";
 import { rabaiSchools, rabaiSchoolYears } from "@/seeders/rabai-schools";
 import { schoolHistoryActivities } from "@/seeders/profile";
 import { ExportMenu } from "@/features/ui/export-menu";
+import {
+  formatSchoolBoarding,
+  formatSchoolClassification,
+  formatSchoolGender,
+  formatSchoolLevel,
+  formatSchoolOwnership,
+  formatSchoolRegistrationStatus,
+  formatSchoolTitleDeed,
+  getSchoolClassification,
+  getSchoolLevel,
+  getSchoolOwnership,
+  getSchoolRegistrationStatus,
+  getSchoolTitleDeed,
+} from "@/features/schools/school-display";
 
 const displayValue = (value: string | number | null | undefined) =>
   value !== null && value !== undefined && String(value).trim()
     ? String(value)
     : "Not provided";
-
-const formatSchoolValue = (value: string | null | undefined) =>
-  displayValue(value?.replaceAll("_", " "));
 
 type SubjectCombinationRecord = {
   code: string;
@@ -558,14 +569,11 @@ export function SchoolProfile({
     { label: "Male", value: maleLearners, tone: "male" },
     { label: "Female", value: femaleLearners, tone: "female" },
   ];
-  const schoolLevel =
-    school.institutionType === "JUNIOR_SECONDARY"
-      ? "Junior Secondary"
-      : school.institutionType === "SENIOR_SECONDARY"
-        ? "Senior School"
-        : "Primary";
-  const registrationStatus = "Registered";
-  const titleDeed = "No";
+  const schoolClassification = getSchoolClassification(school);
+  const registrationStatus = getSchoolRegistrationStatus(school);
+  const schoolLevel = getSchoolLevel(school);
+  const schoolOwnership = getSchoolOwnership(school);
+  const titleDeed = getSchoolTitleDeed();
   const completenessFields = [
     school.schoolCode,
     school.uicCode,
@@ -573,8 +581,8 @@ export function SchoolProfile({
     schoolLevel,
     school.officialName,
     school.displayName,
-    school.institutionType,
-    school.ownershipType,
+    schoolClassification,
+    schoolOwnership,
     school.genderType,
     school.boardingType,
     school.ward,
@@ -607,15 +615,18 @@ export function SchoolProfile({
     ["UIC code", displayValue(school.uicCode)],
     ["Official name", school.officialName],
     ["Display name", school.displayName],
-    ["Institution type", formatSchoolValue(school.institutionType)],
-    ["Registration status", registrationStatus],
-    ["Level", schoolLevel],
-    ["Ownership", formatSchoolValue(school.ownershipType)],
-    ["Gender", formatSchoolValue(school.genderType)],
-    ["Boarding", formatSchoolValue(school.boardingType)],
-    ["Title deed", titleDeed],
-    ["SNE", formatSchoolValue(school.sne)],
-    ["Data confidence", formatSchoolValue(school.dataConfidence)],
+    ["Institution type", formatSchoolClassification(schoolClassification)],
+    ["Registration status", formatSchoolRegistrationStatus(registrationStatus)],
+    ["Level", formatSchoolLevel(schoolLevel)],
+    ["Ownership", formatSchoolOwnership(schoolOwnership)],
+    ["Gender", formatSchoolGender(school.genderType)],
+    ["Boarding", formatSchoolBoarding(school.boardingType)],
+    ["Title deed", formatSchoolTitleDeed(titleDeed)],
+    ["SNE", displayValue(school.sne.replaceAll("_", " "))],
+    [
+      "Data confidence",
+      displayValue(school.dataConfidence.replaceAll("_", " ")),
+    ],
     ["County", school.county],
     ["Sub-County", school.subCounty],
     ["Ward", displayValue(school.ward)],
@@ -664,8 +675,9 @@ export function SchoolProfile({
             </div>
             <h1>{school.displayName}</h1>
             <div className="profile-sub">
-              <span>{formatSchoolValue(school.institutionType)}</span>
-              <i /> <span>{formatSchoolValue(school.ownershipType)}</span>
+              <span>{formatSchoolClassification(schoolClassification)}</span>
+              <i /> <span>{formatSchoolLevel(schoolLevel)}</span>
+              <i /> <span>{formatSchoolOwnership(schoolOwnership)}</span>
               <i />{" "}
               <StatusBadge status={school.isActive ? "Active" : "Inactive"} />
             </div>
@@ -786,46 +798,48 @@ export function SchoolProfile({
               </div>
               <div>
                 <dt>Institution type</dt>
-                <dd>{formatSchoolValue(school.institutionType)}</dd>
+                <dd>{formatSchoolClassification(schoolClassification)}</dd>
               </div>
               <div>
                 <dt>Registration status</dt>
-                <dd>{registrationStatus}</dd>
+                <dd>{formatSchoolRegistrationStatus(registrationStatus)}</dd>
               </div>
               <div>
                 <dt>Level</dt>
-                <dd>{schoolLevel}</dd>
+                <dd>{formatSchoolLevel(schoolLevel)}</dd>
               </div>
               <div>
                 <dt>Ownership</dt>
                 <dd>
                   <span className="type-label">
                     <span
-                      className={`type-dot ${school.ownershipType.toLowerCase()}`}
+                      className={`type-dot ${schoolOwnership.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
                     />
-                    {formatSchoolValue(school.ownershipType)}
+                    {formatSchoolOwnership(schoolOwnership)}
                   </span>
                 </dd>
               </div>
               <div>
                 <dt>Gender</dt>
-                <dd>{formatSchoolValue(school.genderType)}</dd>
+                <dd>{formatSchoolGender(school.genderType)}</dd>
               </div>
               <div>
                 <dt>Boarding</dt>
-                <dd>{formatSchoolValue(school.boardingType)}</dd>
+                <dd>{formatSchoolBoarding(school.boardingType)}</dd>
               </div>
               <div>
                 <dt>Title deed</dt>
-                <dd>{titleDeed}</dd>
+                <dd>{formatSchoolTitleDeed(titleDeed)}</dd>
               </div>
               <div>
                 <dt>SNE</dt>
-                <dd>{formatSchoolValue(school.sne)}</dd>
+                <dd>{displayValue(school.sne.replaceAll("_", " "))}</dd>
               </div>
               <div>
                 <dt>Data confidence</dt>
-                <dd>{formatSchoolValue(school.dataConfidence)}</dd>
+                <dd>
+                  {displayValue(school.dataConfidence.replaceAll("_", " "))}
+                </dd>
               </div>
             </dl>
           </section>
@@ -897,9 +911,7 @@ export function SchoolProfile({
               </div>
               <div>
                 <Users />
-                <strong>
-                  {formatSchoolValue(school.sourceInstitutionType)}
-                </strong>
+                <strong>{displayValue(school.sourceInstitutionType)}</strong>
                 <span>Source type</span>
               </div>
               <div>
